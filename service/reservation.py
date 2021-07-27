@@ -48,7 +48,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
         found = None
         while not done:
             try:
-                time.sleep(search_time)
                 response = requests.post(left_by_coords_url, json=data, verify=False)
                 response_json = json.loads(response.text)
                 print(response_json)
@@ -73,6 +72,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             except requests.exceptions.RequestException as error:
                 print("AnyException : ", error)
                 close()
+            time.sleep(search_time)
 
         if found is None:
             self.find_vaccine(vaccine_type, top_x, top_y, bottom_x, bottom_y)
