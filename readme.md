@@ -77,6 +77,7 @@ python main.py
 - [SeleniumHQ/selenium](https://github.com/SeleniumHQ/selenium/blob/trunk/LICENSE) Apache License 2.0
 - [wkeeling/selenium-wire ](https://github.com/wkeeling/selenium-wire/blob/master/LICENSE) MIT License
 - [SJang1/korea-covid-19-remaining-vaccine-macro](https://github.com/SJang1/korea-covid-19-remaining-vaccine-macro/blob/main/LICENSE) MIT License
+- [SergeyPirogov/webdriver_manager](https://github.com/SergeyPirogov/webdriver_manager/blob/master/LICENSE.txt)
 
 ## 라이센스
 
