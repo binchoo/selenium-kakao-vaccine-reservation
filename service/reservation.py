@@ -72,7 +72,8 @@ class LegacyVaccineReservation(LifeCycleMixin):
             except requests.exceptions.RequestException as error:
                 print("AnyException : ", error)
                 close()
-            time.sleep(search_time)
+            if not done:
+                time.sleep(search_time)
 
         if found is None:
             self.find_vaccine(vaccine_type, region)
