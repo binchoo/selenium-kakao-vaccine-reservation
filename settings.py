@@ -38,4 +38,4 @@ url = {
 
 login_sleep = 600   # 10 minutes until login done.
 
-vaccin_search_time = 298
+vaccin_search_time = 21

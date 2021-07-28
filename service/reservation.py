@@ -75,9 +75,8 @@ class LegacyVaccineReservation(LifeCycleMixin):
             time.sleep(search_time)
 
         if found is None:
-            self.find_vaccine(vaccine_type, top_x, top_y, bottom_x, bottom_y)
+            self.find_vaccine(vaccine_type, region)
 
-        print(f"{found.get('orgName')} 에서 백신을 {found.get('leftCounts')}개 발견했습니다.")
         print(f"주소는 : {found.get('address')} 입니다.")
 
         organization_code = found.get('orgCode')
@@ -101,7 +100,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
         if vaccine_found_code and self.try_reservation(organization_code, vaccine_found_code):
             return None
         else:
-            self.find_vaccine(vaccine_type, top_x, top_y, bottom_x, bottom_y)
+            self.find_vaccine(vaccine_type, region)
 
     def try_reservation(self, organization_code, vaccine_type):
         reservation_url = settings.url.get('kakao').get('reservation')
