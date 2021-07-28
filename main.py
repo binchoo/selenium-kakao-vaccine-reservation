@@ -33,7 +33,7 @@ def login():
     login_cookie_list = login_hooker.login_info
     login_cookie_dict = {item['name']:item['value'] for item in login_cookie_list}
     
-    print(user_validation_text[kakaoUserValidity(login_cookie_dict)])
+    #print(user_validation_text[kakaoUserValidity(login_cookie_dict)])
     return login_cookie_dict
 
 def region_selection():

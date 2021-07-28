@@ -8,6 +8,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
 
     def __init__(self, login_cookie):
         self.login_cookie = login_cookie
+        self.header = settings.header.get('kakao')
 
     def start(self, region):
         self.on_start_listener(self)
@@ -48,7 +49,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
         found = None
         while not done:
             try:
-                response = requests.post(left_by_coords_url, json=data, verify=False)
+                response = requests.post(left_by_coords_url, headers=self.header, json=data, verify=False)
                 response_json = json.loads(response.text)
                 print(response_json)
                 self.pretty_print(response_json)
@@ -81,33 +82,23 @@ class LegacyVaccineReservation(LifeCycleMixin):
         print(f"주소는 : {found.get('address')} 입니다.")
 
         organization_code = found.get('orgCode')
-        vaccine_found_code = None
         if vaccine_type == "ANY":
-            check_organization_url = settings.url.get('kakao').get('check_organization_format').format(organization_code)
-            check_organization_response = requests.get(check_organization_url, cookies=self.login_cookie, verify=False)
-            check_organization_data = json.loads(check_organization_response.text).get("lefts")
-            for x in check_organization_data:
-                if x.get('leftCount') != 0:
-                    found = x
-                    print(f"{x.get('vaccineName')} 백신을 {x.get('leftCount')}개 발견했습니다.")
-                    vaccine_found_code = x.get('vaccineCode')
-                    break
-                else:
-                    print(f"{x.get('vaccineName')} 백신이 없습니다.")
+            try_vaccine_types = ['VEN00013', 'VEN00014', 'VEN00015', 'VEN00016']
         else:
-            vaccine_found_code = vaccine_type
-            print(f"{vaccine_found_code} 으로 예약을 시도합니다.")
+            try_vaccine_types = [vaccine_type]
+        
+        for vaccine_type in try_vaccine_types:
+            print(f"{vaccine_type} 으로 예약을 시도합니다.")
+            if self.try_reservation(organization_code, vaccine_type) is not None:
+                return None
 
-        if vaccine_found_code and self.try_reservation(organization_code, vaccine_found_code):
-            return None
-        else:
-            self.find_vaccine(vaccine_type, region)
+        self.find_vaccine(vaccine_type, region)
 
     def try_reservation(self, organization_code, vaccine_type):
         reservation_url = settings.url.get('kakao').get('reservation')
         for i in range(3):
             data = {"from": "Map", "vaccineCode": vaccine_type, "orgCode": organization_code, "distance": "null"}
-            response = requests.post(reservation_url, data=json.dumps(data), cookies=self.login_cookie, verify=False)
+            response = requests.post(reservation_url, headers=self.header, json=data, cookies=self.login_cookie, verify=False)
             response_json = json.loads(response.text)
             print(response_json)
             for key in response_json:
