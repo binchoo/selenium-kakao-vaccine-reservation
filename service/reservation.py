@@ -7,8 +7,10 @@ from service.lifecycle import LifeCycleMixin
 class LegacyVaccineReservation(LifeCycleMixin):
 
     def __init__(self, login_cookie):
+        self.search_time = settings.vaccine_search_time
         self.login_cookie = login_cookie
         self.header = settings.header.get('kakao')
+        self.reservation_url = settings.url.get('kakao').get('reservation')
 
     def start(self, region):
         self.on_start_listener(self)
@@ -30,7 +32,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
         return vaccine_type
 
     def find_vaccine(self, vaccine_type, region):
-        search_time = settings.vaccin_search_time
         left_by_coords_url = settings.url.get('kakao').get('left_by_coords')
         data = {
             "bottomRight": {
@@ -73,8 +74,9 @@ class LegacyVaccineReservation(LifeCycleMixin):
             except requests.exceptions.RequestException as error:
                 print("AnyException : ", error)
                 close()
+
             if not done:
-                time.sleep(search_time)
+                time.sleep(self.search_time)
 
         if found is None:
             self.find_vaccine(vaccine_type, region)
@@ -95,15 +97,15 @@ class LegacyVaccineReservation(LifeCycleMixin):
         self.find_vaccine(vaccine_type, region)
 
     def try_reservation(self, organization_code, vaccine_type):
-        reservation_url = settings.url.get('kakao').get('reservation')
         for i in range(3):
             data = {
                 "from": "Map", 
                 "vaccineCode": vaccine_type, 
                 "orgCode": organization_code, 
-                "distance": "null"
+                "distance": None
             }
-            response = requests.post(reservation_url, headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
+            response = requests.post(self.reservation_url, 
+                                    headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
             response_json = json.loads(response.text)
             print(response_json)
             for key in response_json:

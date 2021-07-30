@@ -1,7 +1,6 @@
 import settings
-from service.lifecycle import LifeCycleMixin
 
-class Capture(LifeCycleMixin):
+class Capture:
     
     driver_dependency_map = settings.RequestCaptureDependencyMap
 
@@ -12,11 +11,3 @@ class Capture(LifeCycleMixin):
         Driver, BinaryManager = self.driver_dependency_map.get(browser)
         self.driver = Driver(BinaryManager().install())
         self.browser = browser
-        
-    def start(self):
-        self.on_start_listener(self)
-        self._start()
-        self.on_end_listener(self)
-
-    def _start(self):
-        raise NotImplementedError

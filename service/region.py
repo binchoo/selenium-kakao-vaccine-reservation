@@ -1,6 +1,7 @@
 import settings
 import json
 from service.capture import Capture
+from service.lifecycle import LifeCycleMixin
 
 class Region:
 
@@ -23,7 +24,7 @@ class Region:
             return (self.top_left == other.top_left) and (self.bottom_right == other.bottom_right)
         return False
 
-class RegionCapture(Capture):
+class RegionCapture(Capture, LifeCycleMixin):
 
     def __init__(self, browser='chrome'):
         super().__init__(browser)

@@ -1,9 +1,10 @@
 import settings
 from service.hook import Hooker
+from service.lifecycle import LifeCycleMixin
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
-class LoginHooker(Hooker):
+class LoginHooker(Hooker, LifeCycleMixin):
 
     driver_dependency_map = settings.DriverDependencyMap
 
