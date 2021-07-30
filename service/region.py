@@ -1,6 +1,6 @@
 import settings
 import json
-from service.capture import Capture
+from service.selenium import Capture
 from service.lifecycle import LifeCycleMixin
 
 class Region:

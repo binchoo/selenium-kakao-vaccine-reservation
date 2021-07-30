@@ -1,5 +1,5 @@
 import settings
-from service.hook import Hooker
+from service.selenium import Hooker
 from service.lifecycle import LifeCycleMixin
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
