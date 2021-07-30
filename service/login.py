@@ -44,6 +44,11 @@ class KakaoLoginHooker(LoginHooker):
     
     def get_login_page(self, driver):
         driver.get(self.url)
+        self.persist_login(driver)
+    
+    def persist_login(self, driver):
+        check_btn = driver.find_element_by_css_selector('span.ico_check')
+        check_btn.click()
 
     def wait_login(self, driver):
         driver_wait = WebDriverWait(driver, self.waits).until(self.wait_condition)

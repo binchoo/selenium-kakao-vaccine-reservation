@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io
 
+test.py
+
 ### OSX ###
 .DS_Store
 .AppleDouble

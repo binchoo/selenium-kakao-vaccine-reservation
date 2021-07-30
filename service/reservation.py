@@ -97,8 +97,13 @@ class LegacyVaccineReservation(LifeCycleMixin):
     def try_reservation(self, organization_code, vaccine_type):
         reservation_url = settings.url.get('kakao').get('reservation')
         for i in range(3):
-            data = {"from": "Map", "vaccineCode": vaccine_type, "orgCode": organization_code, "distance": "null"}
-            response = requests.post(reservation_url, headers=self.header, json=data, cookies=self.login_cookie, verify=False)
+            data = {
+                "from": "Map", 
+                "vaccineCode": vaccine_type, 
+                "orgCode": organization_code, 
+                "distance": "null"
+            }
+            response = requests.post(reservation_url, headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
             response_json = json.loads(response.text)
             print(response_json)
             for key in response_json:
