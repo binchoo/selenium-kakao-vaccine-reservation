@@ -8,7 +8,9 @@ import webdriver_manager.microsoft
 import webdriver_manager.opera
 import requests
 
-DriverDependencyMap = {
+from service import (Hooker, Capture) # Apply IoC
+
+Hooker.driver_dependency_map = {
     'chrome': (webdriver.Chrome, webdriver_manager.chrome.ChromeDriverManager),
     'chromium': (webdriver.Chrome, webdriver_manager.chrome.ChromeDriverManager),
     'firefox': (webdriver.Firefox, webdriver_manager.firefox.GeckoDriverManager),
@@ -17,7 +19,7 @@ DriverDependencyMap = {
     'opera': (webdriver.Opera, webdriver_manager.opera.OperaDriverManager)
 }
 
-RequestCaptureDependencyMap = {
+Capture.driver_dependency_map = {
     'chrome': (webdriver2.Chrome, webdriver_manager.chrome.ChromeDriverManager),
     'chromium': (webdriver2.Chrome, webdriver_manager.chrome.ChromeDriverManager),
     'firefox': (webdriver2.Firefox, webdriver_manager.firefox.GeckoDriverManager),

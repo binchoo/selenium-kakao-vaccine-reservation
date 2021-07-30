@@ -6,8 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class LoginHooker(Hooker, LifeCycleMixin):
 
-    driver_dependency_map = settings.DriverDependencyMap
-
     def __init__(self, browser: str):
         super().__init__(browser)
         self.login_info = None

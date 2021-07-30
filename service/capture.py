@@ -1,8 +1,6 @@
-import settings
-
 class Capture:
     
-    driver_dependency_map = settings.RequestCaptureDependencyMap
+    driver_dependency_map = None
 
     def __init__(self, browser: str):
         if browser not in self.driver_dependency_map.keys():
