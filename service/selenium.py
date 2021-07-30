@@ -1,4 +1,5 @@
 class SeleniumAware:
+    
     driver_dependency_map = None
     
     def __init__(self, browser: str):
