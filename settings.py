@@ -1,32 +1,29 @@
-import selenium.webdriver as webdriver
-import seleniumwire.webdriver as webdriver2
 import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
-import webdriver_manager.chrome
-import webdriver_manager.firefox
-import webdriver_manager.microsoft
-import webdriver_manager.opera
-import requests
-
-from service import (Hooker, Capture) # Apply IoC
-
-Hooker.driver_dependency_map = {
-    'chrome': (webdriver.Chrome, webdriver_manager.chrome.ChromeDriverManager),
-    'chromium': (webdriver.Chrome, webdriver_manager.chrome.ChromeDriverManager),
-    'firefox': (webdriver.Firefox, webdriver_manager.firefox.GeckoDriverManager),
-    'ie': (webdriver.Ie, webdriver_manager.microsoft.IEDriverManager),
-    'edge': (webdriver.Edge, webdriver_manager.microsoft.EdgeChromiumDriverManager),
-    'opera': (webdriver.Opera, webdriver_manager.opera.OperaDriverManager)
-}
-
-Capture.driver_dependency_map = {
-    'chrome': (webdriver2.Chrome, webdriver_manager.chrome.ChromeDriverManager),
-    'chromium': (webdriver2.Chrome, webdriver_manager.chrome.ChromeDriverManager),
-    'firefox': (webdriver2.Firefox, webdriver_manager.firefox.GeckoDriverManager),
-}
-
 LOGGER.setLevel(logging.WARNING)
 
+import requests
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
+import selenium.webdriver as webdriver
+import seleniumwire.webdriver as webdriver2
+from webdriver_manager import (chrome, firefox, microsoft, opera)
+from service import (Hooker, Capture) # Apply IoC
+Hooker.driver_dependency_map = {
+    'chrome': (webdriver.Chrome, chrome.ChromeDriverManager),
+    'chromium': (webdriver.Chrome, chrome.ChromeDriverManager),
+    'firefox': (webdriver.Firefox, firefox.GeckoDriverManager),
+    'ie': (webdriver.Ie, microsoft.IEDriverManager),
+    'edge': (webdriver.Edge, microsoft.EdgeChromiumDriverManager),
+    'opera': (webdriver.Opera, opera.OperaDriverManager)
+}
+Capture.driver_dependency_map = {
+    'chrome': (webdriver2.Chrome, chrome.ChromeDriverManager),
+    'chromium': (webdriver2.Chrome, chrome.ChromeDriverManager),
+    'firefox': (webdriver2.Firefox, firefox.GeckoDriverManager),
+}
+
+# Constants
 url = {
     'kakao': {
         'login_page': "https://accounts.kakao.com/login?continue=https%3A%2F%2Fcs.kakao.com%2F",
@@ -38,7 +35,6 @@ url = {
         'reservation': 'https://vaccine.kakao.com/api/v1/reservation'
     }
 }
-
 header = {
     'kakao': {
         'Accept': 'application/json, text/plain, */*',
@@ -49,9 +45,7 @@ header = {
         'Keep-Alive': 'timeout=5, max=1000'
     }
 }
-
 login_sleep = 600   # 10 minutes until login done.
-
 vaccine_search_time = 7
 
-requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
