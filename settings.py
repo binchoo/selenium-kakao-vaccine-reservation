@@ -1,14 +1,18 @@
 import logging
-from selenium.webdriver.remote.remote_connection import LOGGER
-LOGGER.setLevel(logging.WARNING)
-
 import requests
-requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
-
+from selenium.webdriver.remote.remote_connection import LOGGER
 import selenium.webdriver as webdriver
 import seleniumwire.webdriver as webdriver2
-from webdriver_manager import (chrome, firefox, microsoft, opera)
-from service import (Hooker, Capture) # Apply IoC
+from webdriver_manager import chrome, firefox, microsoft, opera
+from service import Hooker, Capture
+
+### Selenium LOGGER settings
+LOGGER.setLevel(logging.WARNING)
+
+### requests module's settings
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
+### Selenium Driver & Driver Manager IoC
 Hooker.driver_dependency_map = {
     'chrome': (webdriver.Chrome, chrome.ChromeDriverManager),
     'chromium': (webdriver.Chrome, chrome.ChromeDriverManager),
@@ -17,13 +21,14 @@ Hooker.driver_dependency_map = {
     'edge': (webdriver.Edge, microsoft.EdgeChromiumDriverManager),
     'opera': (webdriver.Opera, opera.OperaDriverManager)
 }
+
 Capture.driver_dependency_map = {
     'chrome': (webdriver2.Chrome, chrome.ChromeDriverManager),
     'chromium': (webdriver2.Chrome, chrome.ChromeDriverManager),
     'firefox': (webdriver2.Firefox, firefox.GeckoDriverManager),
 }
 
-# Constants
+### Constants
 url = {
     'kakao': {
         'login_page': "https://accounts.kakao.com/login?continue=https%3A%2F%2Fcs.kakao.com%2F",
@@ -35,6 +40,7 @@ url = {
         'reservation': 'https://vaccine.kakao.com/api/v1/reservation'
     }
 }
+
 header = {
     'kakao': {
         'Accept': 'application/json, text/plain, */*',
@@ -45,7 +51,9 @@ header = {
         'Keep-Alive': 'timeout=5, max=1000'
     }
 }
-login_sleep = 600   # 10 minutes until login done.
+
+login_sleep = 600 # 10 minutes
+
 vaccine_search_time = 7
 
 
