@@ -51,8 +51,13 @@ class LegacyVaccineReservation(LifeCycleMixin):
         while not done:
             try:
                 response = requests.post(left_by_coords_url, headers=self.header, json=data, verify=False)
-                response_json = json.loads(response.text)
+                response_json = json.loads(response.text)        
                 print(response_json)
+
+                if response.status_code != 200:
+                    print('Response Error Occurred.')
+                    continue
+                
                 self.pretty_print(response_json)
                 for x in response_json.get("organizations"):
                     if x.get("status") == "AVAILABLE" or x.get("leftCounts") != 0:
@@ -108,6 +113,11 @@ class LegacyVaccineReservation(LifeCycleMixin):
                                     headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
             response_json = json.loads(response.text)
             print(response_json)
+            
+            if response.status_code != 200:
+                print('Response Error Occurred.')
+                continue
+
             for key in response_json:
                 value = response_json[key]
                 if key != 'code':
