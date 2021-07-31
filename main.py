@@ -52,9 +52,8 @@ def region_selection():
         print('='*100)
 
     def error_handler(capture, error):
-        try: 
-            raise error
-        except RegionCapture.NullCaptureException:
+        print(error)
+        if error is RegionCapture.NullCaptureException:
             print('앱이 지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
             exit()
 
