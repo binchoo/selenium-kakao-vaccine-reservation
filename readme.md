@@ -71,13 +71,15 @@ python main.py
    유저가 고른 지역에서, 선택한 유형의 백신 여분이 발견될 때까지 계속해서 탐색합니다.
 
    여분의 백신이 발견되면 당신을 대신하여 접종을 신청을 진행합니다.
-
+   
+## 권장 릴리스
+릴리스[1.0](https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/Release1.0)
 ## 코드 의존성
 
 - [SeleniumHQ/selenium](https://github.com/SeleniumHQ/selenium/blob/trunk/LICENSE) Apache License 2.0
 - [wkeeling/selenium-wire ](https://github.com/wkeeling/selenium-wire/blob/master/LICENSE) MIT License
 - [SJang1/korea-covid-19-remaining-vaccine-macro](https://github.com/SJang1/korea-covid-19-remaining-vaccine-macro/blob/main/LICENSE) MIT License
-- [SergeyPirogov/webdriver_manager](https://github.com/SergeyPirogov/webdriver_manager/blob/master/LICENSE.txt)
+- [SergeyPirogov/webdriver_manager](https://github.com/SergeyPirogov/webdriver_manager/blob/master/LICENSE.txt) Apache License 2.0
 
 ## 라이센스
 
