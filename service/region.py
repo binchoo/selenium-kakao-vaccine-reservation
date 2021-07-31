@@ -33,7 +33,6 @@ class RegionCapture(Capture, LifeCycleMixin):
 
     def _start(self):
         self.driver.get(self.url)
-        self.last_capture = None
         try:
             while True:
                 region_requests = list(filter(lambda it: 'left_count_by_coords' in it.url, self.driver.requests))
@@ -44,3 +43,6 @@ class RegionCapture(Capture, LifeCycleMixin):
                         self.on_progress_listener(self)
         except KeyboardInterrupt:
             pass
+        finally:
+            if self.last_capture is None:
+                raise RuntimeError('Region이 설정되지 않았습니다.')
