@@ -51,10 +51,16 @@ def region_selection():
         print('[[2단계]] ', capture.last_capture, '를 좌표 영역으로 사용합니다.')
         print('='*100)
 
+    def error_handler(capture, error):
+        print(error)
+        print('앱이 지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
+        exit()
+
     region_capture = RegionCapture('chrome')
     region_capture.on_start(phase_description)
     region_capture.on_progress(show_current_region)
     region_capture.on_end(phase_summary)
+    region_capture.on_error(error_handler)
 
     region_capture.start()
     region = region_capture.last_capture

@@ -10,7 +10,7 @@ class LifeCycleMixin:
         self.on_progress_listener = func
 
     def on_error(self, func):
-        self.on_progress_listener = func
+        self.on_error_listener = func
 
     def start(self):
         self.on_start_listener(self)
