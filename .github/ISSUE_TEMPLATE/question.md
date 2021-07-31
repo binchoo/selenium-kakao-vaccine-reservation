@@ -7,7 +7,7 @@ assignees: 'binchoo'
 
 ---
 
-## 질문
+## 질문 
 
 ## 상세 내용
 
