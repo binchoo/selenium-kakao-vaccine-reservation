@@ -73,7 +73,9 @@ python main.py
    여분의 백신이 발견되면 당신을 대신하여 접종을 신청을 진행합니다.
    
 ## 권장 릴리스
-릴리스[1.0](https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/Release1.0)
+
+https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/Release1.0.1
+
 ## 코드 의존성
 
 - [SeleniumHQ/selenium](https://github.com/SeleniumHQ/selenium/blob/trunk/LICENSE) Apache License 2.0
