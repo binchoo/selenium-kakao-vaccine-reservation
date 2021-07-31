@@ -36,7 +36,7 @@ class RegionCapture(Capture, LifeCycleMixin):
         self.last_capture = None
         try:
             while True:
-                region_requests = list(filter(lambda it: '/api/v2/vaccine/left_count_by_coords' in it.url, self.driver.requests))
+                region_requests = list(filter(lambda it: 'left_count_by_coords' in it.url, self.driver.requests))
                 if len(region_requests) > 0:
                     tmp_last_region = Region.from_bytes(region_requests[-1].body)
                     if self.last_capture != tmp_last_region:
