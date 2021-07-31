@@ -52,9 +52,11 @@ def region_selection():
         print('='*100)
 
     def error_handler(capture, error):
-        print(error)
-        print('앱이 지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
-        exit()
+        try: 
+            raise error
+        except RegionCapture.NullCaptureException:
+            print('앱이 지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
+            exit()
 
     region_capture = RegionCapture('chrome')
     region_capture.on_start(phase_description)
