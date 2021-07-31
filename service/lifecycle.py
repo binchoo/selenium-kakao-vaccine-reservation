@@ -26,3 +26,5 @@ class LifeCycleMixin:
     def _handle_error(self, error):
         if hasattr(self, 'on_error_listener'):
             self.on_error_listener(self, error)
+        else:
+            raise error

@@ -2,6 +2,7 @@ import settings
 import json
 from service.selenium import Capture
 from service.lifecycle import LifeCycleMixin
+from selenium.common.exceptions import WebDriverException
 
 class Region:
 
@@ -35,14 +36,20 @@ class RegionCapture(Capture, LifeCycleMixin):
         self.driver.get(self.url)
         try:
             while True:
+                _ = self.driver.window_handles
                 region_requests = list(filter(lambda it: 'left_count_by_coords' in it.url, self.driver.requests))
                 if len(region_requests) > 0:
                     tmp_last_region = Region.from_bytes(region_requests[-1].body)
                     if self.last_capture != tmp_last_region:
                         self.last_capture = tmp_last_region
                         self.on_progress_listener(self)
+        except WebDriverException:
+            print('브라우저가 임의로 닫혔습니다.')
         except KeyboardInterrupt:
-            pass
+            print('키 입력으로 브라우저를 닫았습니다.')
         finally:
-            if self.last_capture is None:
-                raise RuntimeError('Region이 설정되지 않았습니다.')
+            self.validate_last_capture_non_null()
+
+    def validate_last_capture_non_null(self):
+        if self.last_capture is None:
+            raise RuntimeError('Region이 설정되지 않았습니다.')
