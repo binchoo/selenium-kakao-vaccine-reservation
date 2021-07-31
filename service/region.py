@@ -43,14 +43,13 @@ class RegionCapture(Capture, LifeCycleMixin):
             print(e)
         except KeyboardInterrupt:
             print(RegionCapture.KeyboardInterrupt())
-        finally:
-            self.validate_last_capture_non_null()
+        self.validate_last_capture_non_null()
 
     def validate_driver_non_null(self):
         try:
             _ = self.driver.window_handles
         except:
-            raise RegionCapture.WebDriverException
+            raise RegionCapture.WebDriverException()
 
     def update_last_capture(self, tmp_capture):
         if self.last_capture != tmp_capture:
@@ -59,7 +58,7 @@ class RegionCapture(Capture, LifeCycleMixin):
 
     def validate_last_capture_non_null(self):
         if self.last_capture is None:
-            raise RegionCapture.NullCaptureException
+            raise RegionCapture.NullCaptureException()
 
     class KeyboardInterrupt(RuntimeError):
         
@@ -68,7 +67,7 @@ class RegionCapture(Capture, LifeCycleMixin):
 
     class WebDriverException(RuntimeError):
         
-        def __init__(self, message='웹 드라이버가 종료되었습니다.'):
+        def __init__(self, message='웹 드라이버가 임의로 종료되었습니다.'):
             super().__init__(message)
 
     class NullCaptureException(RuntimeError):
