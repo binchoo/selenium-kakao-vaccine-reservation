@@ -24,5 +24,5 @@ class LifeCycleMixin:
         raise NotImplementedError
 
     def _handle_error(self, error):
-        if self.on_error_listener is not None:
+        if hasattr(self, 'on_error_listener'):
             self.on_error_listener(self, error)
