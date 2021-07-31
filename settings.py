@@ -35,7 +35,7 @@ url = {
         'continue_page': "https://cs.kakao.com/",
         'map_page': "https://vaccine-map.kakao.com/map2?v=1",
         'user_info_api': "https://vaccine.kakao.com/api/v1/user",
-        'left_by_coords': "https://vaccine-map.kakao.com/api/v2/vaccine/left_count_by_coords",
+        'left_by_coords': "https://vaccine-map.kakao.com/api/v3/vaccine/left_count_by_coords",
         'check_organization_format': 'https://vaccine.kakao.com/api/v2/org/org_code/{}',
         'reservation': 'https://vaccine.kakao.com/api/v1/reservation'
     }

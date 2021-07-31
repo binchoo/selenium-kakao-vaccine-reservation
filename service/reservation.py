@@ -113,7 +113,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
                                     headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
             response_json = json.loads(response.text)
             print(response_json)
-            
+
             if response.status_code != 200:
                 print('Response Error Occurred.')
                 continue
@@ -148,7 +148,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
 
     def play_tada(self):
         print("*****************************따단따단따단**************************************")
-        #playsound(resource_path('tada.mp3'))
 
 def close():
     input("Press Enter to close...")
