@@ -64,7 +64,7 @@ python main.py
    아무거나       : ANY
    ```
 
-5. ### 백신 접종 예약이 신청될 때까지 기다리기
+5. ### 백신 접종 예약이 신청될 때까지 기다리기 [LICENSE](LICENSE)  [LICENSE](LICENSE) 
 
    설정을 모두 마쳤습니다. 이제부터 앱은 
 
@@ -82,7 +82,8 @@ https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/Relea
 - [wkeeling/selenium-wire ](https://github.com/wkeeling/selenium-wire/blob/master/LICENSE) MIT License
 - [SJang1/korea-covid-19-remaining-vaccine-macro](https://github.com/SJang1/korea-covid-19-remaining-vaccine-macro/blob/main/LICENSE) MIT License
 - [SergeyPirogov/webdriver_manager](https://github.com/SergeyPirogov/webdriver_manager/blob/master/LICENSE.txt) Apache License 2.0
+- [PyQt5](https://www.riverbankcomputing.com/static/Docs/PyQt5/introduction.html#license) Riverbank Commercial License && GPLv3
 
 ## 라이센스
 
-[MIT License](https://github.com/binchoo/selenium-kakao-vaccine-reservation/blob/master/LICENSE)
+[GPLv3](https://github.com/binchoo/selenium-kakao-vaccine-reservation/blob/master/LICENSE)
