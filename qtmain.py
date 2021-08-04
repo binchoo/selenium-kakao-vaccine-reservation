@@ -3,82 +3,74 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QSizePolicy,
     QLabel, QComboBox, QGroupBox, QLineEdit, QTextEdit, QPushButton)
 from PyQt5.QtCore import Qt
+from qwidget_wrap import apply_qwidget_wrapping
 
+apply_qwidget_wrapping()
 app = QApplication([])
 app.setStyle('Fusion')
 app.setApplicationName('COVID-19 Vaccine Auto Reservation')
 
-# 1st view hierarchy
-platform_config_layout = QHBoxLayout()
-platform_config = QWidget()
-platform_config.setLayout(platform_config_layout)
-platform_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-user_config_layout = QHBoxLayout()
-user_config = QWidget()
-user_config.setLayout(user_config_layout)
-user_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-macro_config_layout = QHBoxLayout()
-macro_config = QWidget()
-macro_config.setLayout(macro_config_layout)
-macro_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-macro_run_layout = QVBoxLayout()
-macro_run = QWidget()
-macro_run.setLayout(macro_run_layout)
-
-full_widget_layout = QVBoxLayout()
-full_widget_layout.addWidget(platform_config)
-full_widget_layout.addWidget(user_config)
-full_widget_layout.addWidget(macro_config)
-full_widget_layout.addWidget(macro_run)
-
 full_widget = QWidget()
-full_widget.setLayout(full_widget_layout)
+full_widget.useLayout(QVBoxLayout())
 full_widget.setStyleSheet('background-color: white;')
 
-# 2nd view hierarchy
-platfrom_label = QLabel('플랫폼 선택: ')
-platform_combobox = QComboBox()
+# full_widget > platform_config
+platform_config = full_widget.addChild(QWidget())
+platform_config.useLayout(QHBoxLayout())
+platform_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+# full_widget > user_config
+user_config = full_widget.addChild(QWidget())
+user_config.useLayout(QHBoxLayout())
+user_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+# full_widget > macro_config
+macro_config = full_widget.addChild(QWidget())
+macro_config.useLayout(QHBoxLayout())
+macro_config.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+# full_widget > macro_run
+macro_run = full_widget.addChild(QWidget())
+macro_run.useLayout(QVBoxLayout())
+
+
+# full_widget > platform_config > platform_combobox
+platform_config.addChild(QLabel('플랫폼 선택: '))
+platform_combobox = platform_config.addChild(QComboBox())
 platform_combobox.addItems(['kakao'])
-platform_config_layout.addWidget(platfrom_label)
-platform_config_layout.addWidget(platform_combobox)
 
-login_config_layout = QVBoxLayout() #3rd
-login_config = QGroupBox('로그인 정보') 
-login_config.setLayout(login_config_layout)
-user_config_layout.addWidget(login_config)
+# full_widget > user_config > login_config
+login_config = user_config.addChild(QGroupBox('로그인 정보'))
+login_config_layout = QVBoxLayout()
+login_config.useLayout(login_config_layout)
 
-region_config_layout = QVBoxLayout() #3rd
-region_config = QGroupBox('지역 정보')
-region_config.setLayout(region_config_layout)
-user_config_layout.addWidget(region_config)
+# full_widget > user_config > region_config
+region_config = user_config.addChild(QGroupBox('지역 정보'))
+region_config.useLayout(QVBoxLayout())
 
-time_interval_label = QLabel('매크로 수행 주기: ')
-time_interval_input = QLineEdit('7')
-sec_label = QLabel('sec')
-start_button = QPushButton('시작')
+# full_widget > macro_config > interval and buttons
+macro_config.addChild(QLabel('매크로 수행 주기: '))
+time_interval_input = macro_config.addChild(QLineEdit('7'))
+macro_config.addChild(QLabel('sec'))
+
+start_button = macro_config.addChild(QPushButton('시작'))
 start_button.setEnabled(False)
-pause_button = QPushButton('일시정지')
+
+pause_button = macro_config.addChild(QPushButton('일시정지'))
 pause_button.setEnabled(False)
-macro_config_layout.addWidget(time_interval_label)
-macro_config_layout.addWidget(time_interval_input)
-macro_config_layout.addWidget(sec_label)
-macro_config_layout.addWidget(start_button)
-macro_config_layout.addWidget(pause_button)
 
-macro_logs_label = QLabel('매크로 수행 로그')
-macro_logs = QTextEdit()
+# full_widget > macro_run > macro_logs
+macro_run.addChild(QLabel('매크로 수행 로그'))
+macro_logs = macro_run.addChild(QTextEdit())
 macro_logs.setTextInteractionFlags(Qt.TextSelectableByMouse)
-macro_run_layout.addWidget(macro_logs_label)
-macro_run_layout.addWidget(macro_logs)
 
-# 3rd view hierarchy
-login_status = QWidget()
-login_status_layout = QHBoxLayout() #4th
-login_status.setLayout(login_status_layout)
-login_browser_button = QPushButton('브라우저 로그인')
+
+# full_widget > user_config > login_config > login_status
+login_status = login_config.addChild(QWidget())
+login_status.useLayout(QHBoxLayout())
+
+# full_widget > user_config > login_config > browser button
+login_browser_button = login_config.addChild(QPushButton('브라우저 로그인'))
 login_browser_button.setStyleSheet('''QPushButton {
     border: 1px solid #53B555;
     border-radius: 3px;
@@ -96,15 +88,16 @@ QPushButton:pressed {
     background-color: #3E873F;
 }
 ''')
-login_config_layout.addWidget(login_status)
-login_config_layout.addWidget(login_browser_button)
 login_config_layout.setAlignment(login_status, Qt.AlignTop)
 
-topleft_label = QLabel('좌상단 좌표')
-topleft_variable = QLineEdit()
-bottomright_label = QLabel('우상단 좌표')
-bottomright_variable = QLineEdit()
-region_browser_button = QPushButton('브라우저 캡쳐')
+# full_widget > user_config > region_config > coord inputs & brwoser button
+region_config.addChild(QLabel('좌상단 좌표'))
+topleft_variable = region_config.addChild(QLineEdit())
+
+region_config.addChild(QLabel('우하단 좌표'))
+bottomright_variable = region_config.addChild(QLineEdit())
+
+region_browser_button = region_config.addChild(QPushButton('브라우저 캡쳐'))
 region_browser_button.setStyleSheet('''QPushButton {
     border: 1px solid #53B555;
     border-radius: 3px;
@@ -122,18 +115,13 @@ QPushButton:pressed {
     background-color: #3E873F;
 }
 ''')
-region_config_layout.addWidget(topleft_label)
-region_config_layout.addWidget(topleft_variable)
-region_config_layout.addWidget(bottomright_label)
-region_config_layout.addWidget(bottomright_variable)
-region_config_layout.addWidget(region_browser_button)
 
-# 4th view hierarchy
-login_status_label = QLabel('계정 상태:')
-login_status_variable = QLabel('정보 없음')
+
+# full_widget > user_config > login_config > login_status > login_status_variable
+login_status.addChild(QLabel('계정 상태:'))
+login_status_variable = login_status.addChild(QLabel('정보 없음'))
 login_status_variable.setStyleSheet('QLabel { color: orange; }')
-login_status_layout.addWidget(login_status_label)
-login_status_layout.addWidget(login_status_variable)
+
 
 full_widget.show()
 app.exec()

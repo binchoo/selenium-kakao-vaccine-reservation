@@ -28,3 +28,4 @@ class LifeCycleMixin:
             self.on_error_listener(self, error)
         else:
             raise error
+
