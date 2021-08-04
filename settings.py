@@ -52,8 +52,7 @@ header = {
     }
 }
 
+app_version = 1.1
+app_name = f'COVID-19 Vaccine Auto Reservation v{app_version}'
 login_sleep = 600 # 10 minutes
-
 vaccine_search_time = 7
-
-
