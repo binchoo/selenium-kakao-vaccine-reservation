@@ -1,4 +1,4 @@
-import settings
+import constant
 from service.selenium import Hooker
 from service.lifecycle import LifeCycleMixin
 from selenium.common.exceptions import TimeoutException
@@ -11,13 +11,13 @@ class LoginHooker(Hooker, LifeCycleMixin):
         self.login_info = None
 
     def _start(self):
+        self.open()
         self.get_login_page(self.driver)
         try:
             self.wait_login(self.driver)
             self.login_info = self.current_login_info(self.driver)
         except TimeoutException as e:
-            print('장시간 로그인을 하지 않아 앱을 종료합니다.')
-            raise RuntimeError('login_timeout')
+            print('장시간 로그인을 하지 않아 브라우저를 닫습니다.')
         finally:
             self.close()
 
@@ -35,11 +35,11 @@ class LoginHooker(Hooker, LifeCycleMixin):
 
 class KakaoLoginHooker(LoginHooker):
     
-    def __init__(self, browser: str):
+    def __init__(self, browser: str, waits=600):
         super().__init__(browser)
-        self.url = settings.url.get('kakao').get('login_page')
-        self.waits = settings.login_sleep
-        self.wait_condition = lambda driver: driver.current_url == settings.url.get('kakao').get('continue_page')
+        self.url = constant.url.get('kakao').get('login_page')
+        self.waits = waits
+        self.wait_condition = lambda driver: driver.current_url == constant.url.get('kakao').get('continue_page')
     
     def get_login_page(self, driver):
         driver.get(self.url)
@@ -59,7 +59,7 @@ class KakaoLoginHooker(LoginHooker):
 
 def kakaoUserValidity(login_cookie):
     import requests, json
-    user_info_api = settings.url.get('kakao').get('user_info_api')
+    user_info_api = constant.url.get('kakao').get('user_info_api')
     user_info_response = requests.get(user_info_api, cookies=login_cookie, verify=False)
     user_info_json = json.loads(user_info_response.text)
     if user_info_json.get('error'):

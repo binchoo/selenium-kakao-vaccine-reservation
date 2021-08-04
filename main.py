@@ -11,8 +11,9 @@ def login():
         print(f"[[1단계]] {hooker.browser} 브라우저에서 카카오 계정에 로그인합니다.")
 
     def phase_summary(hooker):
+        import json
         print("[[1단계]] 로그인 정보를 얻었습니다.")
-        pprint.pprint(hooker.login_info)
+        print(json.dumps(hooker.login_info))
         print('='*100)
 
     user_validation_text = {

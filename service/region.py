@@ -1,4 +1,4 @@
-import settings
+import constant
 import json
 from service.selenium import Capture
 from service.lifecycle import LifeCycleMixin
@@ -10,6 +10,12 @@ class Region:
         region_json = json.loads(bytes.decode('utf-8'))
         top_left = (region_json['topLeft']['x'], region_json['topLeft']['y'])
         bottom_right = (region_json['bottomRight']['x'], region_json['bottomRight']['y'])
+        return Region(top_left, bottom_right)
+
+    @classmethod
+    def from_json(cls, region_json):
+        top_left = (region_json['top_left'][0], region_json['top_left'][1])
+        bottom_right = (region_json['bottom_right'][0], region_json['bottom_right'][1])
         return Region(top_left, bottom_right)
 
     def __init__(self, top_left, bottom_right):
@@ -28,10 +34,11 @@ class RegionCapture(Capture, LifeCycleMixin):
 
     def __init__(self, browser='chrome'):
         super().__init__(browser)
-        self.url = settings.url.get('kakao').get('map_page')
+        self.url = constant.url.get('kakao').get('map_page')
         self.last_capture = None
 
     def _start(self):
+        self.open()
         self.driver.get(self.url)
         try:
             while True:

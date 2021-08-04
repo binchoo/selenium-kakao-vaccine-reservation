@@ -1,4 +1,4 @@
-import settings
+import constant
 import requests, json
 from datetime import datetime
 import time
@@ -6,15 +6,17 @@ from service.lifecycle import LifeCycleMixin
 
 class LegacyVaccineReservation(LifeCycleMixin):
 
-    def __init__(self, login_cookie):
-        self.search_time = settings.vaccine_search_time
+    def __init__(self, login_cookie, region, interval=7):
         self.login_cookie = login_cookie
-        self.header = settings.header.get('kakao')
-        self.reservation_url = settings.url.get('kakao').get('reservation')
+        self.region = region
+        self.search_time = interval
+        self.header = constant.header.get('kakao')
+        self.reservation_url = constant.url.get('kakao').get('reservation')
+        self.done = False
 
-    def start(self, region):
+    def start(self):
         self.on_start_listener(self)
-        self.find_vaccine(self.vaccine_type_input(), region)
+        self.find_vaccine("ANY")
         self.on_end_listener(self)
 
     def vaccine_type_input(self):
@@ -31,24 +33,23 @@ class LegacyVaccineReservation(LifeCycleMixin):
             vaccine_type = str.upper(input("예약시도할 백신 코드를 알려주세요."))
         return vaccine_type
 
-    def find_vaccine(self, vaccine_type, region):
-        left_by_coords_url = settings.url.get('kakao').get('left_by_coords')
+    def find_vaccine(self, vaccine_type):
+        left_by_coords_url = constant.url.get('kakao').get('left_by_coords')
         data = {
             "bottomRight": {
-                "x": region.bottom_right[0], 
-                "y": region.bottom_right[1]
+                "x": self.region.bottom_right[0], 
+                "y": self.region.bottom_right[1]
             }, 
             "onlyLeft": False, 
             "order": "latitude",
             "topLeft": {
-                "x": region.top_left[0], 
-                "y": region.top_left[1]
+                "x": self.region.top_left[0], 
+                "y": self.region.top_left[1]
             }
         }
 
-        done = False
         found = None
-        while not done:
+        while not self.done:
             try:
                 response = requests.post(left_by_coords_url, headers=self.header, json=data, verify=False)
                 response_json = json.loads(response.text)        
@@ -62,7 +63,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 for x in response_json.get("organizations"):
                     if x.get("status") == "AVAILABLE" or x.get("leftCounts") != 0:
                         found = x
-                        done = True
+                        self.done = True
                         break
             except requests.exceptions.Timeout as timeouterror:
                 print("Timeout Error : ", timeouterror)
@@ -80,11 +81,11 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 print("AnyException : ", error)
                 close()
 
-            if not done:
+            if not self.done:
                 time.sleep(self.search_time)
 
         if found is None:
-            self.find_vaccine(vaccine_type, region)
+            self.find_vaccine(vaccine_type)
 
         print(f"주소는 : {found.get('address')} 입니다.")
 
@@ -99,7 +100,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             if self.try_reservation(organization_code, vaccine_type) is not None:
                 return None
 
-        self.find_vaccine(vaccine_type, region)
+        self.find_vaccine(vaccine_type)
 
     def try_reservation(self, organization_code, vaccine_type):
         for i in range(3):
@@ -148,6 +149,9 @@ class LegacyVaccineReservation(LifeCycleMixin):
 
     def play_tada(self):
         print("*****************************따단따단따단**************************************")
+
+    def interrupt(self):
+        self.done = True
 
 def close():
     input("Press Enter to close...")

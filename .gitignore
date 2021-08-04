@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io
 
 test.py
+context.json
 
 ### OSX ###
 .DS_Store
