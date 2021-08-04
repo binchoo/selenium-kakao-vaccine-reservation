@@ -1,4 +1,3 @@
-import logging
 from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QVBoxLayout, QHBoxLayout, QSizePolicy,
@@ -6,7 +5,6 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from .qwidget_wrap import apply_qwidget_wrapping
 
-logger = logging.getLogger(__name__)
 apply_qwidget_wrapping()
 
 class MainView(QWidget):

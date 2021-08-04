@@ -1,4 +1,4 @@
-import settings
+import constant
 import requests, json
 from datetime import datetime
 import time
@@ -6,15 +6,16 @@ from service.lifecycle import LifeCycleMixin
 
 class LegacyVaccineReservation(LifeCycleMixin):
 
-    def __init__(self, login_cookie):
-        self.search_time = settings.vaccine_search_time
+    def __init__(self, login_cookie, region, interval=7):
         self.login_cookie = login_cookie
-        self.header = settings.header.get('kakao')
-        self.reservation_url = settings.url.get('kakao').get('reservation')
+        self.region = region
+        self.search_time = interval
+        self.header = constant.header.get('kakao')
+        self.reservation_url = constant.url.get('kakao').get('reservation')
 
     def start(self, region):
         self.on_start_listener(self)
-        self.find_vaccine(self.vaccine_type_input(), region)
+        self.find_vaccine(self.vaccine_type_input(), self.region)
         self.on_end_listener(self)
 
     def vaccine_type_input(self):
@@ -32,7 +33,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
         return vaccine_type
 
     def find_vaccine(self, vaccine_type, region):
-        left_by_coords_url = settings.url.get('kakao').get('left_by_coords')
+        left_by_coords_url = constant.url.get('kakao').get('left_by_coords')
         data = {
             "bottomRight": {
                 "x": region.bottom_right[0], 
