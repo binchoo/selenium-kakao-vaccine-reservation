@@ -22,6 +22,7 @@ class MainView(QWidget):
         self.setup()
 
     def setup(self):
+        self.setStyleSheet('background-color: white;')
         self.useLayout(QVBoxLayout())
         self.setChildren()
         self.show()
