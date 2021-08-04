@@ -7,7 +7,6 @@ from service.reservation import LegacyVaccineReservation
 def login():
 
     def phase_description(hooker):
-        hooker.open()
         print('='*100)
         print(f"[[1단계]] {hooker.browser} 브라우저에서 카카오 계정에 로그인합니다.")
 
@@ -41,7 +40,6 @@ def login():
 def region_selection():
 
     def phase_description(capture):
-        capture.open()
         print('='*100)
         print(f"[[2단계]] {capture.browser} 브라우저에서 맵 영역을 지정해 주세요.\n 지정한 영역에서 잔여 백신을 물색할 것입니다.")
 

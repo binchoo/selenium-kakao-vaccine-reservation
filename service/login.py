@@ -11,6 +11,7 @@ class LoginHooker(Hooker, LifeCycleMixin):
         self.login_info = None
 
     def _start(self):
+        self.open()
         self.get_login_page(self.driver)
         try:
             self.wait_login(self.driver)

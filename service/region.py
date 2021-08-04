@@ -32,6 +32,7 @@ class RegionCapture(Capture, LifeCycleMixin):
         self.last_capture = None
 
     def _start(self):
+        self.open()
         self.driver.get(self.url)
         try:
             while True:
