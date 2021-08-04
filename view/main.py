@@ -100,6 +100,7 @@ class LoginConfig(QGroupBox):
         self.setup()
 
     def setup(self):
+        self.setTitle('로그인 정보 설정')
         self.useLayout(QVBoxLayout())
         self.setChildren()
         self.setupButton()
@@ -198,6 +199,7 @@ class RegionConfig(QGroupBox):
         self.setup()
 
     def setup(self):
+        self.setTitle('지역 정보 설정')
         self.useLayout(QVBoxLayout())
         self.setChildren()
         self.setupLabel()
