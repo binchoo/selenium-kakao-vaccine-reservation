@@ -59,7 +59,7 @@ class PlatformConfig(QWidget):
         self.addChild(self.platformComboBox)
         
     def setupLabel(self):
-        self.paltfromLabel.setText('플랫폼 선택:')
+        self.paltfromLabel.setText('플랫폼 선택')
 
     def setupComoboBox(self):
         self.platformComboBox.addItems(self.platforms)
@@ -218,6 +218,8 @@ class RegionConfig(QGroupBox):
         self.bottomRightLabel.setText('우하단 좌표')
 
     def setupLineEdit(self):
+        self.topLeftVariable.setReadOnly(True)
+        self.bottomRightVariable.setReadOnly(True)
         self.notifyRegionChanged(self.coords['top_left'], self.coords['bottom_right'])
 
     def notifyRegionChanged(self, topLeft, bottomRight):
@@ -279,10 +281,11 @@ class MacroConfig(QWidget):
         self.addChild(self.pauseButton)
 
     def setupLabel(self):
-        self.macroIntervalLabel.setText('매크로 수행 주기: ')
+        self.macroIntervalLabel.setText('매크로 수행 주기(초) ')
     
     def setupVariable(self):
         self.macroIntervalVariable.setText(self.macroInterval)
+        self.macroIntervalVariable.setToolTip('초 단위')
 
     def setupButton(self):
         self.startButton.setText('시작')
