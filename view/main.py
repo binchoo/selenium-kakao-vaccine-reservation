@@ -90,6 +90,10 @@ class LoginConfig(QGroupBox):
     def __init__(self, parent=None, config=None):
         super().__init__()
         self.parent = parent
+        if config is not None:
+            self.loginCookie = config['login_cookie']
+        else:
+            self.mock()
 
         self.loginStatus = LoginStatus(self, config)
         self.browserButton = QPushButton()
@@ -123,6 +127,9 @@ class LoginConfig(QGroupBox):
             background-color: #3E873F;
         }
         ''')
+
+    def mock(self):
+        self.loginCookie = None
 
 class LoginStatus(QWidget):
 
