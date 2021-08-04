@@ -1,31 +1,52 @@
 import settings # this line runs settings' bootstrap
-
+import os.path
 import logging
+import json
 from threading import Thread
 
 from PyQt5.QtWidgets import QApplication
 from view.main import MainView
 from service.login import KakaoLoginHooker, kakaoUserValidity
-from service.region import RegionCapture
+from service.region import RegionCapture, Region
 from service.reservation import LegacyVaccineReservation
 
-def main():
+login_cookie = region = run_interval = None
+running = False
 
-    from constant import APP_NAME, QAPP_STYLE
+def config_load(path):
+    global login_cookie, region, run_interval
+    if os.path.isfile(path):
+        with open(path, 'r') as file:
+            json_data = json.load(file)
+        login_cookie = json_data['login_cookie']
+        region = Region.from_json(json_data['region'])
+        run_interval = json_data['run_interval']
+
+def config_dump(path):
+    data = {
+        'login_cookie': login_cookie,
+        'region': region.__dict__,
+        'run_interval': run_interval
+    }
+    with open('context.json', 'w') as file:
+        json.dump(data, file)
+
+def main():
+    from constant import CONTEXT_PATH, APP_NAME, QAPP_STYLE
     from constant import BROWSER, LOGIN_WAITS, USER_VALIDITY_TO_VIEW_VALIDITY, USER_VALIDITY_TEXT
-    from constant import MACRO_INTERVAL
 
     app = view = None
-    login_hooker = region_capture = reservation = None
-    login_cookie = region = run_interval = None
-    running = False
+    login_hooker = region_capture = None
+    
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
     def create_app_and_view():
         app = QApplication([])
         app.setApplicationName(APP_NAME)
         app.setStyle(QAPP_STYLE)
-        return app, MainView()
+        view = MainView()
+        return app, view
 
     def create_login_hooker():
 
@@ -33,6 +54,7 @@ def main():
             logger.info(f'login_hooker> {hooker.browser}에서 카카오 계정에 로그인 합니다.')
         
         def validate_login_info(hooker):
+            global login_cookie
             login_cookie_list = hooker.login_info
             login_cookie = {item['name']:item['value'] for item in login_cookie_list}
             user_validity = kakaoUserValidity(login_cookie)
@@ -48,7 +70,7 @@ def main():
     def create_region_capture():
 
         def phase_description(capture):
-            logger.info(f'region_capture> {hooker.browser}에서 맵 영역을 지정하세요.\n지정된 영역에서 백신 여분을 탐색합니다.')
+            logger.info(f'region_capture> {capture.browser}에서 맵 영역을 지정하세요.\n지정된 영역에서 백신 여분을 탐색합니다.')
 
         def show_current_region(capture):
             current_region = capture.last_capture
@@ -56,10 +78,11 @@ def main():
             print('\t', current_region)
             print('\t', '브라우저를 닫으면 이 영역을 백신 검색에 사용합니다.', end='\n\n')
             view.notifyRegion(current_region)
-            view.updateButtons(login_cookie, region, running)
 
         def commit_region(capture):
+            global region
             region = capture.last_capture
+            view.updateButtons(login_cookie, region, running)
 
         def error_handler(capture, error):
             try:
@@ -72,19 +95,22 @@ def main():
         capture.on_start(phase_description)
         capture.on_progress(show_current_region)
         capture.on_end(commit_region)
+        capture.on_error(error_handler)
         return capture
 
-    def register_reservation():
-
+    def create_reservation():
+        global run_interval
         def phase_description(resv):
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
 
         def phase_summary(resv):
             logger.info('매크로 수행이 끝났습니다.')
 
-        reservation = LegacyVaccineReservation(login_cookie)
+        run_interval = view.getRunInterval(default=7)
+        reservation = LegacyVaccineReservation(login_cookie, region, run_interval)
         reservation.on_start(phase_description)
         reservation.on_end(phase_summary)
+        return reservation
 
     def register_view_handler():
 
@@ -97,15 +123,19 @@ def main():
             capture_thread.start()
 
         def run_reservation_macro():
-            register_reservation()
-            run_interval = view.getRunInterval(default=MACRO_INTERVAL)
-            reservation_start = lambda: reservation.start(region, run_interval)
+            global running
+            reservation = create_reservation()
+            reservation_start = lambda: reservation.start()
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
             running = True
+
             view.updateButtons(login_cookie, region, running)
+            config_dump(CONTEXT_PATH)
 
         def stop_reservation_macro():
+            global running
+            reservation.interrupt()
             running = False
             view.updateButtons(login_cookie, region, running)
 
@@ -114,10 +144,21 @@ def main():
         view.onStartButtonClicked(run_reservation_macro)
         view.onStopButtonClicked(stop_reservation_macro)
 
+    def try_use_config(path):
+        config_load(path)
+        if ( login_cookie is not None
+                and region is not None):
+            user_validity = kakaoUserValidity(login_cookie)
+            view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
+            view.notifyRegion(region)
+            view.updateButtons(login_cookie, region, running)
+
     app, view = create_app_and_view()
     login_hooker = create_login_hooker()
     region_capture = create_region_capture()
     register_view_handler()
+
+    try_use_config(CONTEXT_PATH)
 
     app.exec()
 

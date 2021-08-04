@@ -30,6 +30,51 @@ class MainView(QWidget):
         self.addChild(self.userConfig)
         self.addChild(self.macroConfig)
         self.addChild(self.macroLogs)
+
+    # event handlers
+    def onLoginBrowserClicked(self, func):
+        self.userConfig.loginConfig.browserButton.clicked.connect(func)
+
+    def onRegionBrowserClicked(self, func):
+        self.userConfig.regionConfig.browserButton.clicked.connect(func)
+
+    def onStartButtonClicked(self, func):
+        self.macroConfig.startButton.clicked.connect(func)
+
+    def onStopButtonClicked(self, func):
+        self.macroConfig.stopButton.clicked.connect(func)
+
+    # data notification
+    def notifyUserValidity(self, validity):
+        self.userConfig.loginConfig.loginStatus.notifyStatusChanged(validity)
+    
+    def notifyRegion(self, region):
+        self.userConfig.regionConfig.notifyRegionChanged(
+            str(region.top_left), str(region.bottom_right))
+
+    def updateButtons(self, cookie, region, running):
+        print(cookie, region, running)
+        cookie_is_ok = cookie is not None
+        region_is_ok = region is not None
+        valid_user = self.userConfig.loginConfig.loginStatus.isOk()
+        if cookie_is_ok and region_is_ok and valid_user:
+            if not running:
+                self.macroConfig.startButton.setEnabled(True)
+                self.macroConfig.stopButton.setEnabled(False)
+            else:
+                self.macroConfig.startButton.setEnabled(False)
+                self.macroConfig.stopButton.setEnabled(True)
+        else:
+            self.macroConfig.startButton.setEnabled(False)
+            self.macroConfig.stopButton.setEnabled(False)
+
+    def getRunInterval(self, default):
+        try:
+            interval_text = self.macroConfig.macroIntervalVariable.getText()
+            interval = int(interval_text.replace(' ', ''))
+        except:
+            return default
+        return interval
         
 class PlatformConfig(QWidget):
     
@@ -135,6 +180,7 @@ class LoginStatus(QWidget):
     def __init__(self, parent=None, config=None):
         super().__init__()
         self.parent = parent
+        self.status = 'none'
         if config is not None:
             self.statusDisplay = config['status_display']
         else:
@@ -162,6 +208,7 @@ class LoginStatus(QWidget):
         color = self.statusDisplay[newStatus]['color']
         self.statusVariable.setText(text)
         self.statusVariable.setStyleSheet(f'color: {color};')
+        self.status = newStatus
 
     def mock(self):
         self.statusDisplay = {
@@ -178,6 +225,9 @@ class LoginStatus(QWidget):
                 'color': 'green'
             }
         }
+    
+    def isOk(self):
+        return self.status == 'ok'
 
 class RegionConfig(QGroupBox):
     
@@ -246,8 +296,8 @@ class RegionConfig(QGroupBox):
 
     def mock(self):
         self.coords = {
-            'top_left': '(0, 0)',
-            'bottom_right': '(0, 0)'
+            'top_left': 'null',
+            'bottom_right': 'null'
         }
 
 class MacroConfig(QWidget):
@@ -262,7 +312,7 @@ class MacroConfig(QWidget):
         self.macroIntervalLabel = QLabel()
         self.macroIntervalVariable = QLineEdit()
         self.startButton = QPushButton()
-        self.pauseButton = QPushButton()
+        self.stopButton = QPushButton()
         self.setup()
 
     def setup(self):
@@ -276,7 +326,7 @@ class MacroConfig(QWidget):
         self.addChild(self.macroIntervalLabel)
         self.addChild(self.macroIntervalVariable)
         self.addChild(self.startButton)
-        self.addChild(self.pauseButton)
+        self.addChild(self.stopButton)
 
     def setupLabel(self):
         self.macroIntervalLabel.setText('매크로 수행 주기(초) ')
@@ -288,8 +338,8 @@ class MacroConfig(QWidget):
     def setupButton(self):
         self.startButton.setText('시작')
         self.startButton.setEnabled(False)
-        self.pauseButton.setText('일시정지')
-        self.pauseButton.setEnabled(False)
+        self.stopButton.setText('정지')
+        self.stopButton.setEnabled(False)
 
     def mock(self):
         self.macroInterval = str(7)

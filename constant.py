@@ -21,6 +21,7 @@ header = {
     }
 }
 
+CONTEXT_PATH = 'context.json'
 APP_VERSION = 1.1
 APP_NAME = f'COVID-19 Vaccine Auto Reservation v{APP_VERSION}'
 QAPP_STYLE = 'Fusion'
@@ -45,5 +46,3 @@ USER_VALIDITY_TO_VIEW_VALIDITY = {
     "E_ALREADY_RESERVED": "expired",
     "OK": "ok"
 }
-
-MACRO_INTERVAL = 7
