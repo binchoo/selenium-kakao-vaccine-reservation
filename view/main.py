@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QVBoxLayout, QHBoxLayout, QSizePolicy,
-    QLabel, QComboBox, QGroupBox, QLineEdit, QTextEdit, QPushButton)
+    QLabel, QComboBox, QGroupBox, QLineEdit, QTextEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import Qt
 from .qwidget_wrap import apply_qwidget_wrapping
 
@@ -30,6 +30,14 @@ class MainView(QWidget):
         self.addChild(self.userConfig)
         self.addChild(self.macroConfig)
         self.addChild(self.macroLogs)
+
+    def popMessageBox(self, title, text):
+        messageBox = QMessageBox()
+        messageBox.setWindowTitle(title)
+        messageBox.setText(text)
+        messageBox.setWindowFlags(Qt.WindowStaysOnTopHint)
+        messageBox.setIcon(QMessageBox.Information)
+        messageBox.exec()
 
     # event handlers
     def onLoginBrowserClicked(self, func):
@@ -61,6 +69,7 @@ class MainView(QWidget):
             if not running:
                 self.macroConfig.startButton.setEnabled(True)
                 self.macroConfig.stopButton.setEnabled(False)
+                self.popMessageBox('정보 완성', '매크로를 수행 가능합니다.')
             else:
                 self.macroConfig.startButton.setEnabled(False)
                 self.macroConfig.stopButton.setEnabled(True)
@@ -108,7 +117,7 @@ class PlatformConfig(QWidget):
         self.platformComboBox.addItems(self.platforms)
 
     def mock(self):
-        self.platforms = ['kakao', 'naver']
+        self.platforms = ['kakao']
 
 class UserConfig(QWidget):
     
