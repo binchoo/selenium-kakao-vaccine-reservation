@@ -64,7 +64,7 @@ python main.py
    아무거나       : ANY
    ```
 
-5. ### 백신 접종 예약이 신청될 때까지 기다리기 [LICENSE](LICENSE)  [LICENSE](LICENSE) 
+5. ### 백신 접종 예약이 신청될 때까지 기다리기
 
    설정을 모두 마쳤습니다. 이제부터 앱은 
 
@@ -86,4 +86,4 @@ https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/Relea
 
 ## 라이센스
 
-[GPLv3](https://github.com/binchoo/selenium-kakao-vaccine-reservation/blob/master/LICENSE)
+[GPLv3](LICENSE) 
