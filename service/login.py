@@ -31,9 +31,6 @@ class LoginHooker(Hooker, LifeCycleMixin):
     def current_login_info(self, driver):
         raise NotImplementedError
 
-    def close(self):
-        self.driver.close()
-
 class KakaoLoginHooker(LoginHooker):
     
     def __init__(self, browser: str, waits=600):

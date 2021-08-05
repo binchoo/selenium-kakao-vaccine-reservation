@@ -12,7 +12,9 @@ class SeleniumAware:
     def open(self):
         self.driver = self.Driver(self.BinaryManager().install())
     
-
+    def close(self):
+        self.driver.close()   
+        
 class Hooker(SeleniumAware):
     pass
 
