@@ -74,6 +74,8 @@ python main.py
    
    ![image](https://user-images.githubusercontent.com/15683098/128220071-76dd55cc-0adb-4159-9985-9b120013bb4a.png)
    
+   ![GIF 2021-08-05 오후 7-34-37](https://user-images.githubusercontent.com/15683098/128337800-a8dd6b91-05ab-4587-9197-3610524acf99.gif)
+
 ## 권장 릴리스
 
 https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.09
