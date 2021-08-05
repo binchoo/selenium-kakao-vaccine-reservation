@@ -11,6 +11,7 @@ from service.region import RegionCapture, Region
 from service.reservation import LegacyVaccineReservation
 
 login_cookie = region = run_interval = None
+reservation = None
 running = False
 
 def config_load(path):
@@ -98,8 +99,8 @@ def main():
         capture.on_error(error_handler)
         return capture
 
-    def create_reservation():
-        global run_interval
+    def register_reservation():
+        global run_interval, reservation
         def phase_description(resv):
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
 
@@ -110,7 +111,6 @@ def main():
         reservation = LegacyVaccineReservation(login_cookie, region, run_interval)
         reservation.on_start(phase_description)
         reservation.on_end(phase_summary)
-        return reservation
 
     def register_view_handler():
 
@@ -124,12 +124,11 @@ def main():
 
         def run_reservation_macro():
             global running
-            reservation = create_reservation()
+            register_reservation()
             reservation_start = lambda: reservation.start()
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
             running = True
-
             view.updateButtons(login_cookie, region, running)
             config_dump(CONTEXT_PATH)
 
