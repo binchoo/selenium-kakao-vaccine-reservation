@@ -63,9 +63,14 @@ def main():
             view.updateButtons(login_cookie, region, running)
             logger.info(USER_VALIDITY_TEXT[user_validity])
 
+        def error_handler(hooker, error):
+            print(error)
+            view.popMessageBox('브라우저 닫힘', f'브라우저를 임의로 닫지 마세요.')
+
         hooker = KakaoLoginHooker(browser=BROWSER, waits=LOGIN_WAITS)
         hooker.on_start(phase_description)
         hooker.on_end(validate_login_info)
+        hooker.on_error(error_handler)
         return hooker
 
     def create_region_capture():
