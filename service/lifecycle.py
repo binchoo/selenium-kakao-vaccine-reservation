@@ -24,7 +24,8 @@ class LifeCycleMixin:
             self._start()
         except Exception as e:
             self._handle_error(e)
-        self._after_end()
+        finally:
+            self._after_end()
 
     def _before_start(self):
         if self.on_start_listener is not None:

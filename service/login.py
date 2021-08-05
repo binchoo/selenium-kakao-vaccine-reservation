@@ -17,8 +17,11 @@ class LoginHooker(Hooker, LifeCycleMixin):
         try:
             self.wait_login(self.driver)
             self.login_info = self.current_login_info(self.driver)
+            self.validate_login_info_non_null()
         except TimeoutException as e:
             print('장시간 로그인을 하지 않아 브라우저를 닫습니다.')
+        except Exception as e:
+            raise e
         finally:
             self.close()
 
@@ -30,6 +33,10 @@ class LoginHooker(Hooker, LifeCycleMixin):
 
     def current_login_info(self, driver):
         raise NotImplementedError
+
+    def validate_login_info_non_null(self):
+        if self.login_info is None:
+            raise RuntimeError('얻은 로그인 정보가 없습니다.')
 
 class KakaoLoginHooker(LoginHooker):
     

@@ -55,17 +55,18 @@ def main():
             logger.info(f'login_hooker> {hooker.browser}에서 카카오 계정에 로그인 합니다.')
         
         def validate_login_info(hooker):
-            global login_cookie
-            login_cookie_list = hooker.login_info
-            login_cookie = {item['name']:item['value'] for item in login_cookie_list}
-            user_validity = kakaoUserValidity(login_cookie)
-            view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
-            view.updateButtons(login_cookie, region, running)
-            logger.info(USER_VALIDITY_TEXT[user_validity])
+            if hooker.login_info is not None:
+                global login_cookie
+                login_cookie_list = hooker.login_info
+                login_cookie = {item['name']:item['value'] for item in login_cookie_list}
+                user_validity = kakaoUserValidity(login_cookie)
+                view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
+                view.updateButtons(login_cookie, region, running)
+                logger.info(USER_VALIDITY_TEXT[user_validity])
 
         def error_handler(hooker, error):
             print(error)
-            view.popMessageBox('브라우저 닫힘', f'브라우저를 임의로 닫지 마세요.')
+            view.popMessageBox('브라우저 닫힘', f'브라우저가 임의로 닫혔습니다.')
 
         hooker = KakaoLoginHooker(browser=BROWSER, waits=LOGIN_WAITS)
         hooker.on_start(phase_description)
