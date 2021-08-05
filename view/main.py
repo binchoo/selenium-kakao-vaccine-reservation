@@ -82,8 +82,10 @@ class MainView(QWidget):
 
     def getRunInterval(self, default):
         try:
-            interval_text = self.macroConfig.macroIntervalVariable.getText()
-            interval = int(interval_text.replace(' ', ''))
+            interval_text = self.macroConfig.macroIntervalVariable.text()
+            for ch in [' ', '-']:
+                interval_text = interval_text.replace(ch, '')
+            interval = int(interval_text)
         except:
             return default
         return interval
