@@ -7,6 +7,7 @@ from service.lifecycle import LifeCycleMixin
 class LegacyVaccineReservation(LifeCycleMixin):
 
     def __init__(self, login_cookie, region, interval=7):
+        super().__init__()
         self.login_cookie = login_cookie
         self.region = region
         self.search_time = interval
@@ -56,8 +57,9 @@ class LegacyVaccineReservation(LifeCycleMixin):
                         break
 
     def _print(self, msg):
-        self.getMessage = lambda: msg
-        self.on_progress_listener(self)
+        if self.on_progress_listener is not None:
+            self.getMessage = lambda: msg
+            self.on_progress_listener(self)
         print(msg)
 
     def find_vaccine_remaining(self, vaccine_type):

@@ -79,11 +79,11 @@ def reservation(login_cookie, region):
         print(f"[[3단계]] 어플리케이션을 종료합니다.")
         print('='*100)
 
-    vaccine_reservation = LegacyVaccineReservation(login_cookie)
+    vaccine_reservation = LegacyVaccineReservation(login_cookie, region)
     vaccine_reservation.on_start(phase_description)
     vaccine_reservation.on_end(phase_summary)
 
-    vaccine_reservation.start(region)
+    vaccine_reservation.start()
 
 if __name__ == '__main__':
     reservation(login(), region_selection())
