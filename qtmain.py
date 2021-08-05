@@ -83,7 +83,6 @@ def main():
             global region
             region = capture.last_capture
             view.updateButtons(login_cookie, region, running)
-            view.popMessageBox('이제 매크로를 실행할 수 있습니다.')
 
         def error_handler(capture, error):
             try:
