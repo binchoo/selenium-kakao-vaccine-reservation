@@ -1,5 +1,5 @@
 import constant
-from service.selenium import Hooker
+from service import Hooker
 from service.lifecycle import LifeCycleMixin
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,7 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 class LoginHooker(Hooker, LifeCycleMixin):
 
     def __init__(self, browser: str):
-        super().__init__(browser)
+        Hooker.__init__(self, browser)
+        LifeCycleMixin.__init__(self)
         self.login_info = None
 
     def _start(self):

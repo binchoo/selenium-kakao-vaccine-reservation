@@ -1,6 +1,6 @@
 import constant
 import json
-from service.selenium import Capture
+from service import Capture
 from service.lifecycle import LifeCycleMixin
 
 class Region:
@@ -47,8 +47,8 @@ class Region:
 class RegionCapture(Capture, LifeCycleMixin):
 
     def __init__(self, browser='chrome'):
-        super(Capture).__init__(browser)
-        super(LifeCycleMixin, self).__init__()
+        Capture.__init__(self, browser)
+        LifeCycleMixin.__init__(self)
         self.url = constant.url.get('kakao').get('map_page')
         self.last_capture = None
 
