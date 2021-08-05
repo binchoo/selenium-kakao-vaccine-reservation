@@ -15,6 +15,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
         self.reservation_url = constant.url.get('kakao').get('reservation')
         self._kill = False
         self.vaccine_type = "ANY"
+        self.view_logger = None
 
     def start(self):
         self.on_start_listener(self)
@@ -56,11 +57,16 @@ class LegacyVaccineReservation(LifeCycleMixin):
                         self._kill = True
                         break
 
+    def set_view_logger(self, qtwidget):
+        self.view_logger = qtwidget
+
     def _print(self, msg):
-        if self.on_progress_listener is not None:
-            self.getMessage = lambda: msg
-            self.on_progress_listener(self)
+        if self.view_logger is not None:
+            self.view_logger.log(msg)
         print(msg)
+
+    def print_to_qwidget(self, msg, qwidget):
+        qwidget.append(msg)
 
     def find_vaccine_remaining(self, vaccine_type):
         left_by_coords_url = constant.url.get('kakao').get('left_by_coords')

@@ -111,8 +111,7 @@ def main():
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
         
         def log_message(resv):
-            msg = resv.getMessage()
-            view.macroLogs.appendLog(msg)
+            view.macroLogs.appendLog(resv.getMessage())
 
         def phase_summary(resv):
             logger.info('매크로 수행이 끝났습니다.')
@@ -120,8 +119,8 @@ def main():
         run_interval = view.getRunInterval(default=7)
         reservation = LegacyVaccineReservation(login_cookie, region, run_interval)
         reservation.on_start(phase_description)
-        reservation.on_progress(log_message)
         reservation.on_end(phase_summary)
+        reservation.set_view_logger(view.macroLogs)
 
     def register_view_handler():
 
@@ -156,7 +155,7 @@ def main():
 
     def try_use_config(path):
         config_load(path)
-        if ( login_cookie is not None
+        if (login_cookie is not None
                 and region is not None):
             user_validity = kakaoUserValidity(login_cookie)
             view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])

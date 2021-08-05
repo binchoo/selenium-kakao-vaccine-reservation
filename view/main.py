@@ -383,7 +383,7 @@ class MacroLogs(QWidget):
     def setupTextEdit(self):
         self.macroLogsTextEdit.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
-    def appendLog(self, text):
+    def log(self, text):
         self.appendLogSignal.run(text)
 
     @pyqtSlot(str)
@@ -391,6 +391,7 @@ class MacroLogs(QWidget):
         self.macroLogsTextEdit.append(text)
 
     class AppendLogSignal(QObject):
+
         signal = pyqtSignal(str)
 
         def run(self, text):
