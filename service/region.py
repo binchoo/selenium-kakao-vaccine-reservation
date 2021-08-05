@@ -30,6 +30,20 @@ class Region:
             return (self.top_left == other.top_left) and (self.bottom_right == other.bottom_right)
         return False
 
+    def convert_to_dto(self):
+        return {
+            "bottomRight": {
+                "x": self.bottom_right[0], 
+                "y": self.bottom_right[1]
+            }, 
+            "onlyLeft": False, 
+            "order": "latitude",
+            "topLeft": {
+                "x": self.top_left[0], 
+                "y": self.top_left[1]
+            }
+        }
+
 class RegionCapture(Capture, LifeCycleMixin):
 
     def __init__(self, browser='chrome'):
