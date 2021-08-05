@@ -32,12 +32,15 @@ class MainView(QWidget):
         self.addChild(self.macroLogs)
 
     def popMessageBox(self, title, text):
-        messageBox = QMessageBox()
-        messageBox.setWindowTitle(title)
-        messageBox.setText(text)
-        messageBox.setWindowFlags(Qt.WindowStaysOnTopHint)
-        messageBox.setIcon(QMessageBox.Information)
-        messageBox.exec()
+        try:
+            messageBox = QMessageBox()
+            messageBox.setWindowTitle(title)
+            messageBox.setText(text)
+            messageBox.setWindowFlags(Qt.WindowStaysOnTopHint)
+            messageBox.setIcon(QMessageBox.Information)
+            messageBox.exec()
+        except:
+            pass
 
     # event handlers
     def onLoginBrowserClicked(self, func):
