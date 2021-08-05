@@ -13,6 +13,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
         self.header = constant.header.get('kakao')
         self.reservation_url = constant.url.get('kakao').get('reservation')
         self._kill = False
+        self.vaccine_type = "ANY"
 
     def start(self):
         self.on_start_listener(self)
@@ -43,10 +44,10 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 print(f"주소는 : {vaccine_remaining.get('address')} 입니다.")
                 organization_code = vaccine_remaining.get('orgCode')
 
-                if vaccine_type == "ANY":
+                if self.vaccine_type == "ANY":
                     try_vaccine_types = ['VEN00013', 'VEN00014', 'VEN00015', 'VEN00016']
                 else:
-                    try_vaccine_types = [vaccine_type]
+                    try_vaccine_types = [self.vaccine_type]
                 
                 for vaccine_type in try_vaccine_types:
                     print(f"{vaccine_type} 으로 예약을 시도합니다.")
@@ -71,7 +72,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             self.pretty_print(response_json)
             for x in response_json.get("organizations"):
                 if x.get("status") == "AVAILABLE" or x.get("leftCounts") != 0:
-                    vaccine_remaining = x
+                    vaccine_remaining = self.mock()
                     break
         except requests.exceptions.Timeout as timeouterror:
             print("Timeout Error : ", timeouterror)
@@ -89,10 +90,12 @@ class LegacyVaccineReservation(LifeCycleMixin):
             print("AnyException : ", error)
             close()
 
-        return vaccine_remaining
+        return self.mock()
 
     def try_reservation(self, organization_code, vaccine_type, try_loops=3):
         for i in range(try_loops):
+            if self._kill:
+                break
             data = {
                 "from": "Map", 
                 "vaccineCode": vaccine_type, 
@@ -137,6 +140,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
     def interrupt(self):
         self._kill = True
 
-def close():
-    input("Press Enter to close...")
-    sys.exit()
+    def mock(self):
+        x =  {'orgCode': '12358681', 'orgName': '곽내과의원', 'address': '서울 종로구 자하문로 58', 'x': 126.97120895207867, 'y': 37.581253855387715, 'status': 'AVAILABLE', 'leftCounts': 11}
+        return x
