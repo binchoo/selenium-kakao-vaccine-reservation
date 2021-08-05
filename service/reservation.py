@@ -104,17 +104,18 @@ class LegacyVaccineReservation(LifeCycleMixin):
 
         return vaccine_remaining
 
-    def try_reservation(self, organization_code, vaccine_type, try_loops=3):
+    def try_reservation(self, organization_code, vaccine_type, try_loops=2):
+        data = {
+            "from": "Map", 
+            "vaccineCode": vaccine_type, 
+            "orgCode": organization_code, 
+            "distance": None
+        }
+
         self._print(f"{vaccine_type} 으로 예약을 시도합니다.")
         for i in range(try_loops):
             if self._kill:
                 break
-            data = {
-                "from": "Map", 
-                "vaccineCode": vaccine_type, 
-                "orgCode": organization_code, 
-                "distance": None
-            }
             response = requests.post(self.reservation_url, 
                                     headers=self.header, json=data, cookies=self.login_cookie, verify=False, timeout=7)
             response_json = json.loads(response.text)
@@ -122,7 +123,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
 
             if response.status_code != 200:
                 print('Response Error Occurred.')
-                continue
 
             for key in response_json:
                 value = response_json[key]
