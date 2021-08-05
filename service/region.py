@@ -47,7 +47,8 @@ class Region:
 class RegionCapture(Capture, LifeCycleMixin):
 
     def __init__(self, browser='chrome'):
-        super().__init__(browser)
+        super(Capture).__init__(browser)
+        super(LifeCycleMixin, self).__init__()
         self.url = constant.url.get('kakao').get('map_page')
         self.last_capture = None
 
