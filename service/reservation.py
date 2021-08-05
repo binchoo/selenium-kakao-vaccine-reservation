@@ -76,7 +76,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             self.pretty_print(response_json)
             for x in response_json.get("organizations"):
                 if x.get("status") == "AVAILABLE" or x.get("leftCounts") != 0:
-                    vaccine_remaining = self.mock()
+                    vaccine_remaining = x
                     break
         except requests.exceptions.Timeout as timeouterror:
             print("Timeout Error : ", timeouterror)
@@ -94,7 +94,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             print("AnyException : ", error)
             close()
 
-        return self.mock()
+        return vaccine_remaining
 
     def try_reservation(self, organization_code, vaccine_type, try_loops=3):
         self._print(f"{vaccine_type} 으로 예약을 시도합니다.")
