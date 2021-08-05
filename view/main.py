@@ -1,8 +1,5 @@
-from PyQt5.QtWidgets import (
-    QApplication, QWidget,
-    QVBoxLayout, QHBoxLayout, QSizePolicy,
-    QLabel, QComboBox, QGroupBox, QLineEdit, QTextEdit, QPushButton, QMessageBox)
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from .qwidget_wrap import apply_qwidget_wrapping
 
 apply_qwidget_wrapping()
@@ -364,11 +361,13 @@ class MacroLogs(QWidget):
         super().__init__()
         self.parent = parent
 
+        self.appendLogSignal = MacroLogs.AppendLogSignal()
         self.macroLogsLabel = QLabel()
-        self.marcoLogsTextEdit = QTextEdit()
+        self.macroLogsTextEdit = QTextEdit()
         self.setup()
 
     def setup(self):
+        self.appendLogSignal.signal.connect(self._appendLog)
         self.useLayout(QVBoxLayout())
         self.setChildren()
         self.setupLabel()
@@ -376,14 +375,23 @@ class MacroLogs(QWidget):
 
     def setChildren(self):
         self.addChild(self.macroLogsLabel)
-        self.addChild(self.marcoLogsTextEdit)
+        self.addChild(self.macroLogsTextEdit)
     
     def setupLabel(self):
         self.macroLogsLabel.setText('매크로 수행 로그')
 
     def setupTextEdit(self):
-        self.marcoLogsTextEdit.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.macroLogsTextEdit.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
     def appendLog(self, text):
-        prev = self.marcoLogsTextEdit.getText()
-        self.macroLogsTextEdit.setText(prev + '\n' + text)
+        self.appendLogSignal.run(text)
+
+    @pyqtSlot(str)
+    def _appendLog(self, text):
+        self.macroLogsTextEdit.append(text)
+
+    class AppendLogSignal(QObject):
+        signal = pyqtSignal(str)
+
+        def run(self, text):
+            self.signal.emit(text)

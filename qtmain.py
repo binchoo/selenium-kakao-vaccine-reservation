@@ -109,6 +109,10 @@ def main():
         global run_interval, reservation
         def phase_description(resv):
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
+        
+        def log_message(resv):
+            msg = resv.getMessage()
+            view.macroLogs.appendLog(msg)
 
         def phase_summary(resv):
             logger.info('매크로 수행이 끝났습니다.')
@@ -116,6 +120,7 @@ def main():
         run_interval = view.getRunInterval(default=7)
         reservation = LegacyVaccineReservation(login_cookie, region, run_interval)
         reservation.on_start(phase_description)
+        reservation.on_progress(log_message)
         reservation.on_end(phase_summary)
 
     def register_view_handler():

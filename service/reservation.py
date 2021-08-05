@@ -50,11 +50,15 @@ class LegacyVaccineReservation(LifeCycleMixin):
                     try_vaccine_types = [self.vaccine_type]
                 
                 for vaccine_type in try_vaccine_types:
-                    print(f"{vaccine_type} 으로 예약을 시도합니다.")
                     if self.try_reservation(organization_code, vaccine_type):
                         found = True
                         self._kill = True
                         break
+
+    def _print(self, msg):
+        self.getMessage = lambda: msg
+        self.on_progress_listener(self)
+        print(msg)
 
     def find_vaccine_remaining(self, vaccine_type):
         left_by_coords_url = constant.url.get('kakao').get('left_by_coords')
@@ -72,7 +76,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
             self.pretty_print(response_json)
             for x in response_json.get("organizations"):
                 if x.get("status") == "AVAILABLE" or x.get("leftCounts") != 0:
-                    vaccine_remaining = x
+                    vaccine_remaining = self.mock()
                     break
         except requests.exceptions.Timeout as timeouterror:
             print("Timeout Error : ", timeouterror)
@@ -90,9 +94,10 @@ class LegacyVaccineReservation(LifeCycleMixin):
             print("AnyException : ", error)
             close()
 
-        return vaccine_remaining
+        return self.mock()
 
     def try_reservation(self, organization_code, vaccine_type, try_loops=3):
+        self._print(f"{vaccine_type} 으로 예약을 시도합니다.")
         for i in range(try_loops):
             if self._kill:
                 break
@@ -116,17 +121,17 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 if key != 'code':
                     continue
                 if key == 'code' and value == "NO_VACANCY":
-                    print("잔여백신 접종 신청이 선착순 마감되었습니다.")
+                    self._print("잔여백신 접종 신청이 선착순 마감되었습니다.")
                     time.sleep(0.08)
                 elif key == 'code' and value == "SUCCESS":
-                    print("백신접종신청 성공!!!")
+                    self._print("백신접종신청 성공!!!")
                     organization_code_success = response_json.get("organization")
-                    print(
+                    self._print(
                         f"병원이름: {organization_code_success.get('orgName')}\t전화번호: {organization_code_success.get('phoneNumber')}\t주소: {organization_code_success.get('address')}\t운영시간: {organization_code_success.get('openHour')}")
                     return True
                 else:
-                    print("ERROR. 아래 메시지를 보고, 예약이 신청된 병원 또는 1339에 예약이 되었는지 확인해보세요.")
-                    print(response.text)
+                    self._print("ERROR. 아래 메시지를 보고, 예약이 신청된 병원 또는 1339에 예약이 되었는지 확인해보세요.")
+                    self._print(response.text)
         return False
 
     def pretty_print(self, response_json):
@@ -135,7 +140,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 continue
             print(
                 f"잔여갯수: {org.get('leftCounts')}\t상태: {org.get('status')}\t기관명: {org.get('orgName')}\t주소: {org.get('address')}")
-        print(datetime.now())
+        self._print(str(datetime.now()))
 
     def interrupt(self):
         self._kill = True
