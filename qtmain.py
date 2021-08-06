@@ -105,7 +105,6 @@ def main():
         return capture
 
     def create_reservation():
-        global run_interval
         def phase_description(resv):
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
         
@@ -118,7 +117,6 @@ def main():
             running = False
             view.updateButtons(login_cookie, region, running)
 
-        run_interval = view.getRunInterval(default=7)
         reservation = LegacyVaccineReservation()
         reservation.on_start(phase_description)
         reservation.on_end(phase_summary)
@@ -136,11 +134,13 @@ def main():
             capture_thread.start()
 
         def run_reservation_macro():
+            global run_interval, running
+            run_interval = view.getRunInterval(default=7)
+
             reservation_start = lambda: reservation.start(login_cookie=login_cookie, 
                                                           region=region, vaccine_type='ANY', run_interval=run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
-            global running
             running = True
             view.updateButtons(login_cookie, region, running)
             config_dump(CONTEXT_PATH)
@@ -163,6 +163,7 @@ def main():
             user_validity = kakaoUserValidity(login_cookie)
             view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
             view.notifyRegion(region)
+            view.notifyRunInterval(run_interval)
             view.updateButtons(login_cookie, region, running)
 
     app, view = create_app_and_view()

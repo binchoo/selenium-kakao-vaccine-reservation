@@ -60,6 +60,9 @@ class MainView(QWidget):
         self.userConfig.regionConfig.notifyRegionChanged(
             str(region.top_left), str(region.bottom_right))
 
+    def notifyRunInterval(self, run_interval):
+        self.macroConfig.macroIntervalVariable.setText(str(run_interval))
+
     def updateButtons(self, cookie, region, running):
         print(cookie, region, running)
         cookie_is_ok = cookie is not None
