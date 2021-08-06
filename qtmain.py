@@ -1,15 +1,15 @@
-import settings # this line runs settings' bootstrap
-from threading import Thread
-
-from PyQt5.QtWidgets import QApplication
-import PyQt5.QtCore as Qt
-
+from bootstrap import settings # this line runs settings' bootstrap
 from bootstrap.model import JsonConfigModel
+
 from service.login import KakaoLoginHooker, kakaoUserValidity
 from service.region import RegionCapture
 from service.reservation import LegacyVaccineReservation
 from dto import Region
 from view.main import MainView
+
+from PyQt5.QtWidgets import QApplication
+import PyQt5.QtCore as Qt
+from threading import Thread
 
 view_model = JsonConfigModel(json=settings.initial_context)
 

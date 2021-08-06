@@ -10,3 +10,6 @@ class VaccineVendor(Enum):
     @classmethod
     def values(cls):
         return map(lambda c: c.value, cls)
+
+class Organization:
+    pass

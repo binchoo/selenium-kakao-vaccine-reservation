@@ -7,8 +7,6 @@ import seleniumwire.webdriver as webdriver2
 from webdriver_manager import chrome, firefox, microsoft, opera
 
 from service import Hooker, Capture
-from dto import Region
-from bootstrap.model import JsonConfigModel
 
 ### Selenium LOGGER settings
 LOGGER.setLevel(logging.WARNING)
