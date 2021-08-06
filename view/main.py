@@ -85,7 +85,7 @@ class MainView(QWidget):
             interval_text = self.macroConfig.macroIntervalVariable.text()
             for ch in [' ', '-']:
                 interval_text = interval_text.replace(ch, '')
-            interval = int(interval_text)
+            interval = float(interval_text)
         except:
             return default
         return interval
