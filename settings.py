@@ -34,8 +34,8 @@ Capture.driver_dependency_map = {
 
 initial_context = {
     'platforms': ['kakao'],
-    'user_validity': 'expired',
-    'status_display': {
+    'user_validity': 'none',
+    'user_validity_display': {
         'none': {
             'text': '정보 없음',
             'color': 'orange'
@@ -49,7 +49,7 @@ initial_context = {
             'color': 'green'
         }
     },
-    'region': Region((0, 0), (0, 0)),
+    'region': None,
     'default_vaccines': ['ANY'],
     'run_interval': 7,
     'running': False,

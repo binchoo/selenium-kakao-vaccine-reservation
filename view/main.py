@@ -201,7 +201,7 @@ class LoginStatus(QWidget):
         self.parent = parent
         self.status = 'none'
         if model is not None:
-            self.statusDisplay = model.status_display
+            self.statusDisplay = model.user_validity_display
         else:
             self.mock()
 
@@ -287,7 +287,10 @@ class RegionConfig(QGroupBox):
     def setupLineEdit(self):
         self.topLeftVariable.setReadOnly(True)
         self.bottomRightVariable.setReadOnly(True)
-        self.notifyRegionChanged(self.region.top_left, self.region.bottom_right)
+        if self.region is not None:
+            self.notifyRegionChanged(self.region.top_left, self.region.bottom_right)
+        else:
+            self.notifyRegionChanged(None, None)
 
     def notifyRegionChanged(self, topLeft, bottomRight):
         self.topLeftVariable.setText(str(topLeft))
@@ -314,8 +317,7 @@ class RegionConfig(QGroupBox):
         ''')
 
     def mock(self):
-        from dto import Region
-        self.region = Region((0, 0), (0, 0))
+        self.region = None
 
 class VaccineConfig(QWidget):
 
