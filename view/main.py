@@ -6,20 +6,23 @@ apply_qwidget_wrapping()
 
 class MainView(QWidget):
     
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
+        self.model = model
 
-        self.platformConfig = PlatformConfig(self, config)
-        self.userConfig = UserConfig(self, config)
-        self.macroConfig = MacroConfig(self, config)
-        self.macroLogs = MacroLogs(self, config)
+        self.platformConfig = PlatformConfig(self, model)
+        self.userConfig = UserConfig(self, model)
+        self.vaccineConfig = VaccineConfig(self, model)
+        self.macroConfig = MacroConfig(self, model)
+        self.macroLogs = MacroLogs(self, model)
         self.setup()
 
     def setup(self):
         self.setStyleSheet('background-color: white;')
         self.useLayout(QVBoxLayout())
         self.setChildren()
+        self.setSubscription()
         self.show()
 
     def setChildren(self):
@@ -27,6 +30,15 @@ class MainView(QWidget):
         self.addChild(self.userConfig)
         self.addChild(self.macroConfig)
         self.addChild(self.macroLogs)
+
+    def setSubscription(self):
+        if self.model is not None:
+            self.model.subscribe('user_validity', self.notifyUserValidity)
+            self.model.subscribe('user_validity', self.updateButtons)
+            self.model.subscribe('region', self.notifyRegion)
+            self.model.subscribe('region', self.updateButtons)
+            self.model.subscribe('run_interval', self.notifyRunInterval)
+            self.model.subscribe('running', self.updateButtons)
 
     def popMessageBox(self, title, text):
         try:
@@ -53,21 +65,21 @@ class MainView(QWidget):
         self.macroConfig.stopButton.clicked.connect(func)
 
     # data notification
-    def notifyUserValidity(self, validity):
+    def notifyUserValidity(self, model, attr, validity):
         self.userConfig.loginConfig.loginStatus.notifyStatusChanged(validity)
     
-    def notifyRegion(self, region):
-        self.userConfig.regionConfig.notifyRegionChanged(
-            str(region.top_left), str(region.bottom_right))
+    def notifyRegion(self, model, attr, region):
+        self.userConfig.regionConfig.notifyRegionChanged(region.top_left, region.bottom_right)
 
-    def notifyRunInterval(self, run_interval):
+    def notifyRunInterval(self, model, attr, run_interval):
         self.macroConfig.macroIntervalVariable.setText(str(run_interval))
 
-    def updateButtons(self, cookie, region, running):
-        print(cookie, region, running)
-        cookie_is_ok = cookie is not None
-        region_is_ok = region is not None
+    def updateButtons(self, model, attr, value):
+        cookie_is_ok = self.model.has_value('login_cookie')
+        region_is_ok = self.model.has_value('region')
+        running = self.model.running
         valid_user = self.userConfig.loginConfig.loginStatus.isOk()
+
         if cookie_is_ok and region_is_ok and valid_user:
             if not running:
                 self.macroConfig.startButton.setEnabled(True)
@@ -92,12 +104,12 @@ class MainView(QWidget):
         
 class PlatformConfig(QWidget):
     
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
 
-        if config is not None:
-            self.platforms = config['platforms']
+        if model is not None:
+            self.platforms = model['platforms']
         else:
             self.mock()
 
@@ -126,12 +138,12 @@ class PlatformConfig(QWidget):
 
 class UserConfig(QWidget):
     
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
 
-        self.loginConfig = LoginConfig(self, config)
-        self.regionConfig = RegionConfig(self, config)
+        self.loginConfig = LoginConfig(self, model)
+        self.regionConfig = RegionConfig(self, model)
         self.setup()
 
     def setup(self):
@@ -144,15 +156,11 @@ class UserConfig(QWidget):
 
 class LoginConfig(QGroupBox):
 
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
-        if config is not None:
-            self.loginCookie = config['login_cookie']
-        else:
-            self.mock()
 
-        self.loginStatus = LoginStatus(self, config)
+        self.loginStatus = LoginStatus(self, model)
         self.browserButton = QPushButton()
         self.setup()
 
@@ -186,17 +194,14 @@ class LoginConfig(QGroupBox):
         }
         ''')
 
-    def mock(self):
-        self.loginCookie = None
-
 class LoginStatus(QWidget):
 
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
         self.status = 'none'
-        if config is not None:
-            self.statusDisplay = config['status_display']
+        if model is not None:
+            self.statusDisplay = model.status_display
         else:
             self.mock()
 
@@ -245,11 +250,11 @@ class LoginStatus(QWidget):
 
 class RegionConfig(QGroupBox):
     
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
-        if config is not None:
-            self.coords = config['coords']
+        if model is not None:
+            self.region = model.region
         else:
             self.mock()
 
@@ -282,11 +287,11 @@ class RegionConfig(QGroupBox):
     def setupLineEdit(self):
         self.topLeftVariable.setReadOnly(True)
         self.bottomRightVariable.setReadOnly(True)
-        self.notifyRegionChanged(self.coords['top_left'], self.coords['bottom_right'])
+        self.notifyRegionChanged(self.region.top_left, self.region.bottom_right)
 
     def notifyRegionChanged(self, topLeft, bottomRight):
-        self.topLeftVariable.setText(topLeft)
-        self.bottomRightVariable.setText(bottomRight)
+        self.topLeftVariable.setText(str(topLeft))
+        self.bottomRightVariable.setText(str(bottomRight))
     
     def setupButton(self):
         self.browserButton.setText('브라우저로 탐지')
@@ -309,18 +314,34 @@ class RegionConfig(QGroupBox):
         ''')
 
     def mock(self):
-        self.coords = {
-            'top_left': 'null',
-            'bottom_right': 'null'
-        }
+        from dto import Region
+        self.region = Region((0, 0), (0, 0))
+
+class VaccineConfig(QWidget):
+
+    def __init__(self, parent=None, model=None):
+        super().__init__()
+        self.parent = parent
+        if model is not None:
+            self.default_vaccines = model.default_vaccines
+        else:
+            self.mock()
+
+        self.setup()
+
+    def setup(self):
+        pass
+
+    def mock(self):
+        self.default_vaccines = ['ANY']
 
 class MacroConfig(QWidget):
     
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
-        if config is not None:
-            self.macroInterval = config['macro_interval']
+        if model is not None:
+            self.macroInterval = str(model.run_interval)
         else:
             self.mock()
         self.macroIntervalLabel = QLabel()
@@ -360,7 +381,7 @@ class MacroConfig(QWidget):
 
 class MacroLogs(QWidget):
 
-    def __init__(self, parent=None, config=None):
+    def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
 

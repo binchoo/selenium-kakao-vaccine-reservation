@@ -1,20 +1,10 @@
 import constant
-from enum import Enum
 import requests, json
 import time
 from datetime import datetime
+
 from service.lifecycle import LifeCycleMixin
-
-class VaccineVendor(Enum):
-    PFIZER = 'VEN00013'
-    MODERNA = 'VEN00014'
-    ASTRAZENECA = 'VEN00015'
-    JANSSEN = 'VEN00016'
-    ANY = 'ANY'
-
-    @classmethod
-    def values(cls):
-        return map(lambda c: c.value, cls)
+from dto.vaccine import VaccineVendor
 
 class LegacyVaccineReservation(LifeCycleMixin):
 
