@@ -93,12 +93,16 @@ def main():
 
     def create_reservation():
 
-        def phase_summary(resv):
+        def set_running_true(resv):
+            view_model.update('running', True)
+
+        def set_running_false(resv):
             view_model.update('running', False)
 
         reservation = LegacyVaccineReservation()
         reservation.set_view_logger(view.macroLogs)
-        reservation.on_end(phase_summary)
+        reservation.on_start(set_running_true)
+        reservation.on_end(set_running_false)
         return reservation
 
     def register_view_handler():
@@ -113,7 +117,6 @@ def main():
 
         def run_reservation_macro():
             view_model.update('run_interval', view.getRunInterval(default=7))
-            view_model.update('running', True)
             reservation_start = lambda: reservation.start(login_cookie=view_model.login_cookie, 
                                                         region=view_model.region, vaccine_type='ANY', run_interval=view_model.run_interval)
             reservation_thread = Thread(target=reservation_start)
