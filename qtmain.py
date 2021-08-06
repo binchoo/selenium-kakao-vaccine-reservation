@@ -5,13 +5,13 @@ import json
 from threading import Thread
 
 from PyQt5.QtWidgets import QApplication
+import PyQt5.QtCore as Qt
 from view.main import MainView
 from service.login import KakaoLoginHooker, kakaoUserValidity
 from service.region import RegionCapture, Region
 from service.reservation import LegacyVaccineReservation
 
 login_cookie = region = run_interval = None
-reservation = None
 running = False
 
 def config_load(path):
@@ -37,7 +37,7 @@ def main():
     from constant import BROWSER, LOGIN_WAITS, USER_VALIDITY_TO_VIEW_VALIDITY, USER_VALIDITY_TEXT
 
     app = view = None
-    login_hooker = region_capture = None
+    login_hooker = region_capture = reservation = None
     
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
@@ -57,8 +57,7 @@ def main():
         def validate_login_info(hooker):
             if hooker.login_info is not None:
                 global login_cookie
-                login_cookie_list = hooker.login_info
-                login_cookie = {item['name']:item['value'] for item in login_cookie_list}
+                login_cookie = {item['name']:item['value'] for item in hooker.login_info}
                 user_validity = kakaoUserValidity(login_cookie)
                 view.notifyUserValidity(USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
                 view.updateButtons(login_cookie, region, running)
@@ -105,8 +104,8 @@ def main():
         capture.on_error(error_handler)
         return capture
 
-    def register_reservation():
-        global run_interval, reservation
+    def create_reservation():
+        global run_interval
         def phase_description(resv):
             logger.info('설정하신 계정과 장소를 토대로 백신 예약을 시도합니다.')
         
@@ -115,12 +114,16 @@ def main():
 
         def phase_summary(resv):
             logger.info('매크로 수행이 끝났습니다.')
+            global running
+            running = False
+            view.updateButtons(login_cookie, region, running)
 
         run_interval = view.getRunInterval(default=7)
-        reservation = LegacyVaccineReservation(login_cookie, region, run_interval)
+        reservation = LegacyVaccineReservation()
         reservation.on_start(phase_description)
         reservation.on_end(phase_summary)
         reservation.set_view_logger(view.macroLogs)
+        return reservation
 
     def register_view_handler():
 
@@ -133,18 +136,18 @@ def main():
             capture_thread.start()
 
         def run_reservation_macro():
-            global running
-            register_reservation()
-            reservation_start = lambda: reservation.start()
+            reservation_start = lambda: reservation.start(login_cookie=login_cookie, 
+                                                          region=region, vaccine_type='ANY', run_interval=run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
+            global running
             running = True
             view.updateButtons(login_cookie, region, running)
             config_dump(CONTEXT_PATH)
 
         def stop_reservation_macro():
-            global running
             reservation.interrupt()
+            global running
             running = False
             view.updateButtons(login_cookie, region, running)
 
@@ -165,6 +168,7 @@ def main():
     app, view = create_app_and_view()
     login_hooker = create_login_hooker()
     region_capture = create_region_capture()
+    reservation = create_reservation()
     register_view_handler()
 
     try_use_config(CONTEXT_PATH)

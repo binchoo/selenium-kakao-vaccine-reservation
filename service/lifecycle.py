@@ -18,7 +18,8 @@ class LifeCycleMixin:
     def on_error(self, func):
         self.on_error_listener = func
 
-    def start(self):
+    def start(self, **kwargs):
+        self._set_properties(kwargs)
         self._before_start()
         try:
             self._start()
@@ -26,6 +27,10 @@ class LifeCycleMixin:
             self._handle_error(e)
         finally:
             self._after_end()
+
+    def _set_properties(self, kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def _before_start(self):
         if self.on_start_listener is not None:
