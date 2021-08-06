@@ -114,6 +114,9 @@ def main():
 
         def phase_summary(resv):
             logger.info('매크로 수행이 끝났습니다.')
+            global running
+            running = False
+            view.updateButtons(login_cookie, region, running)
 
         run_interval = view.getRunInterval(default=7)
         reservation = LegacyVaccineReservation()
@@ -134,8 +137,7 @@ def main():
 
         def run_reservation_macro():
             reservation_start = lambda: reservation.start(login_cookie=login_cookie, 
-                                                          region=region, 
-                                                          run_interval=run_interval)
+                                                          region=region, vaccine_type='ANY', run_interval=run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
             global running
