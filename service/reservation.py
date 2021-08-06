@@ -18,20 +18,31 @@ class VaccineVendor(Enum):
 
 class LegacyVaccineReservation(LifeCycleMixin):
 
-    setup_properties = ['login_cookie', 'region', 'run_interval', 'vaccine_type']
-
     def __init__(self):
         super().__init__()
         self.left_by_coords_url = constant.url.get('kakao').get('left_by_coords')
         self.org_inventory_url = constant.url.get('kakao').get('org_inventory')
         self.reservation_url = constant.url.get('kakao').get('reservation')
         self.header = constant.header.get('kakao')
-        self.found = self.kill = False
         self.view_logger = None
 
+    setup_properties = ['login_cookie', 'region', 'run_interval', 'vaccine_type']
+
+    def setup(self):
+        self.validate_dependencies()
+        self.region_data = self.region.convert_to_dto()
+        self.vaccine_type = VaccineVendor.ANY #TODO: 백신 타입 외부 주입하기
+        self.kill = False
+
+    def validate_dependencies(self):
+        if not all(
+            [hasattr(self, prop) and getattr(self, prop) is not None for prop in self.setup_properties]
+        ):
+            raise RuntimeError('필요한 의존성이 전달되지 않았습니다.')
+
     def _start(self):
-        self._setup()
-        while self._runnable():
+        self.setup()
+        while not self.kill:
             self._print(datetime.now())
             organizations = self.get_available_organizations() #
             if len(organizations) > 0:
@@ -41,25 +52,6 @@ class LegacyVaccineReservation(LifeCycleMixin):
                     break
             else:
                 time.sleep(self.run_interval)
-
-    def _setup(self):
-        self._validate_dependencies()
-        self.region_data = self.region.convert_to_dto()
-        self.vaccine_type = VaccineVendor.ANY #TODO: 백신 타입 외부 주입하기
-        self._set_flags(found=False, kill=False)
-
-    def _validate_dependencies(self):
-        if not all(
-            [hasattr(self, prop) and getattr(self, prop) is not None for prop in self.setup_properties]
-        ):
-            raise RuntimeError('필요한 의존성이 전달되지 않았습니다.')
-    
-    def _set_flags(self, found, kill):
-        self.found = found
-        self.kill = kill
-
-    def _runnable(self):
-        return not self.found and not self.kill
 
     def get_available_organizations(self):
         response = self._fail_safe_api(self.left_by_coords_url, method='post', expects=[200],
@@ -109,7 +101,7 @@ class LegacyVaccineReservation(LifeCycleMixin):
                         org = response_json.get('organization')
                         self._print("백신 접종 신청 성공!!!")
                         self._print(f"""
-                            병원이름: {org.get('orgName')}
+                            기관명: {org.get('orgName')}
                             전화번호: {org.get('phoneNumber')}
                             주소: {org.get('address')}
                             운영시간: {org.get('openHour')}""")
