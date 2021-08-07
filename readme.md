@@ -19,7 +19,7 @@ https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.1
 
 ### 실행 파일을 사용할 때
   - `qtmain.exe` - 윈도우용 실행파일 
-  - `qtmain` - 맥OS용 실행파일
+  - 맥OS용 실행파일은 아직 지원하지 않습니다. 이미 내장된 파이썬을 이용해 보십시오.
 
 ### python 3.7 이상을 사용할 때
 GUI 애플리케이션
