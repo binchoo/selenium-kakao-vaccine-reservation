@@ -34,8 +34,8 @@ def main():
 
     def save_model():
         to_save = JsonConfigModel.convert(model, 
-                                            settings.serialize_converter, 
-                                            attrs=['login_cookie', 'region', 'run_interval'])
+                                    settings.serialize_converter, 
+                                    attrs=['login_cookie', 'region', 'run_interval'])
         to_save.dump(CONTEXT_PATH)
         print(to_save.dumps())
 
@@ -69,7 +69,7 @@ def main():
             print("region_capture> 현재 보고 있는 영역")
             print('\t', current_region)
             print('\t', '브라우저를 닫으면 이 영역을 백신 검색에 사용합니다.', end='\n\n')
-            view.notifyRegion(model, 'region', current_region)
+            model.update('current_region', current_region)
             
         def commit_region(capture):
             model.update('region', capture.last_capture)
@@ -113,8 +113,9 @@ def main():
 
         def run_reservation_macro():
             model.update('run_interval', view.getRunInterval(default=7))
-            reservation_start = lambda: reservation.start(login_cookie=model.login_cookie, 
-                                                        region=model.region, vaccine_type='ANY', run_interval=model.run_interval)
+            reservation_start = lambda: reservation.start(
+                                            login_cookie=model.login_cookie, 
+                                            region=model.region, vaccine_type='ANY', run_interval=model.run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
             save_model()

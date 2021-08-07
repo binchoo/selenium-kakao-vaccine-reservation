@@ -37,6 +37,7 @@ class MainView(QWidget):
             self.model.subscribe('user_validity', self.updateButtons)
             self.model.subscribe('region', self.notifyRegion)
             self.model.subscribe('region', self.updateButtons)
+            self.model.subscribe('current_region', self.notifyRegion)
             self.model.subscribe('run_interval', self.notifyRunInterval)
             self.model.subscribe('running', self.updateButtons)
 
