@@ -70,7 +70,8 @@ class MainView(QWidget):
         self.userConfig.loginConfig.loginStatus.notifyStatusChanged(validity)
     
     def notifyRegion(self, model, attr, region):
-        self.userConfig.regionConfig.notifyRegionChanged(region.top_left, region.bottom_right)
+        if region is not None:
+            self.userConfig.regionConfig.notifyRegionChanged(region.top_left, region.bottom_right)
 
     def notifyRunInterval(self, model, attr, run_interval):
         self.macroConfig.macroIntervalVariable.setText(str(run_interval))

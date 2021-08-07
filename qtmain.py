@@ -66,10 +66,10 @@ def main():
 
         def show_current_region(capture):
             current_region = capture.last_capture
+            model.update('current_region', current_region)
             print("region_capture> 현재 보고 있는 영역")
             print('\t', current_region)
             print('\t', '브라우저를 닫으면 이 영역을 백신 검색에 사용합니다.', end='\n\n')
-            model.update('current_region', current_region)
             
         def commit_region(capture):
             model.update('region', capture.last_capture)
