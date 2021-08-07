@@ -78,7 +78,7 @@ python main.py
 
 ## 권장 릴리스
 
-https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.09
+https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.1
 
 ## 코드 의존성
 
