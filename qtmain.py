@@ -1,17 +1,14 @@
 from bootstrap import settings # this line runs settings' bootstrap
-from bootstrap.model import JsonConfigModel
-
+from bootstrap.model import JsonModel
 from service.login import KakaoLoginHooker, kakaoUserValidity
 from service.region import RegionCapture
 from service.reservation import LegacyVaccineReservation
-from dto import Region
 from view.main import MainView
 
 from PyQt5.QtWidgets import QApplication
-import PyQt5.QtCore as Qt
 from threading import Thread
 
-model = JsonConfigModel(json=settings.initial_context)
+model = JsonModel(json=settings.initial_context)
 
 def main():
 
@@ -22,8 +19,8 @@ def main():
 
     def use_saved_model():
         try:
-            saved_model = JsonConfigModel.from_file(CONTEXT_PATH)
-            saved_model = JsonConfigModel.convert(saved_model, settings.deserialize_converter)
+            saved_model = JsonModel.from_file(CONTEXT_PATH)
+            saved_model = JsonModel.convert(saved_model, settings.deserialize_converter)
         except:
             return
         model.update('login_cookie', saved_model.login_cookie)
@@ -33,7 +30,7 @@ def main():
         model.update('user_validity', userValidity)
 
     def save_model():
-        to_save = JsonConfigModel.convert(model, 
+        to_save = JsonModel.convert(model, 
                                     settings.serialize_converter, 
                                     attrs=['login_cookie', 'region', 'run_interval'])
         to_save.dump(CONTEXT_PATH)
