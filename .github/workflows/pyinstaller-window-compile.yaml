@@ -28,7 +28,7 @@ jobs:
         pip install -r requirements.txt
     - name: build exe file
       run: |
-        pyinstaller --onefile qtmain.py
+        pyinstaller --onefile dist\window-build.spec
     - name: commit and push
       shell: cmd
       run: |
