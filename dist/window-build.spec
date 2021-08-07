@@ -11,7 +11,7 @@ pkg_dir = split(seleniumwire.__file__)[0]
 pkg_data = []
 pkg_data.extend((file, dirname(file).split("site-packages")[1]) for file in glob.iglob(join(pkg_dir,"**{}*".format(sep)), recursive=True))
 
-a = Analysis(['qtmain.py'],
+a = Analysis([f'..{os.sep}qtmain.py'],
              pathex=['F:\\repositories\\corona-virus-vaccine-reservation'],
              binaries=[],
              datas=pkg_data,
