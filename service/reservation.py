@@ -83,10 +83,11 @@ class LegacyVaccineReservation(LifeCycleMixin):
                 if response is not None:
                     response_json = json.loads(response.text) #
                     result_code = response_json['code']
-                    result_desc = response_json['desc']
+                    
                     print(response_json)
-
-                    self._print(result_desc)
+                    if 'desc' in response_json.keys():
+                        self._print(response_json['desc'])
+                        
                     if result_code == 'SUCCESS':
                         org = response_json.get('organization')
                         self._print("백신 접종 신청 성공!!!")

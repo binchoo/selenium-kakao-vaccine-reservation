@@ -77,5 +77,5 @@ def kakaoUserValidity(login_cookie):
         elif user_status is None:
             return 'E_INVALID_STATUS'
         else:
-            return 'E_ARLEADY_RESERVED'
+            return 'E_ALREADY_RESERVED'
                 

@@ -6,7 +6,7 @@ url = {
         'user_info_api': "https://vaccine.kakao.com/api/v1/user",
         'left_by_coords': "https://vaccine-map.kakao.com/api/v3/vaccine/left_count_by_coords",
         'org_inventory': 'https://vaccine.kakao.com/api/v2/org/org_code/{}',
-        'reservation': 'https://vaccine.kakao.com/api/v1/reservation'
+        'reservation': 'https://vaccine.kakao.com/api/v2/reservation'
     }
 }
 
