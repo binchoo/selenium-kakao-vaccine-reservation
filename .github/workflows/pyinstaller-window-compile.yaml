@@ -30,8 +30,8 @@ jobs:
       run: |
         pyinstaller --onefile qtmain.py
     - name: commit and push
+      shell: cmd
       run: |
-        shell: cmd
         git config --global user.name 'binchoo'
         git config --global user.email 'jbinchoo@gmail.com'
         git add dist
