@@ -28,7 +28,7 @@ jobs:
         pip install -r requirements.txt
     - name: build exe file
       run: |
-        pyinstaller --onefile qtmain.py
+        pyinstaller --onefile --hidden-import bootstrap --hidden-import seleniumwire --hidden-import PyQt5.QtWidgets --hidden-import PyQt5.QtCore --name qtmain.app qtmain.py
     - name: commit and push
       run: |
         git config --global user.name 'binchoo'

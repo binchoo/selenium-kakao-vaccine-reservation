@@ -93,6 +93,8 @@ class MainView(QWidget):
         else:
             self.macroConfig.startButton.setEnabled(False)
             self.macroConfig.stopButton.setEnabled(False)
+        self.macroConfig.startButton.setEnabled(True)
+        self.macroConfig.stopButton.setEnabled(True)
 
     def getRunInterval(self, default):
         try:
