@@ -38,11 +38,11 @@ class Model:
 
     #TODO: 'delete' operation things ...
 
-class JsonConfigModel(Model):
+class JsonModel(Model):
 
     @classmethod
     def from_file(cls, path: str):
-        model = JsonConfigModel(cls.read_json(path))
+        model = JsonModel(cls.read_json(path))
         return model
     
     @classmethod
