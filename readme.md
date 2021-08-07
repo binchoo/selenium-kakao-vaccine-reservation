@@ -10,16 +10,25 @@
 
 앱 실행은 접종 신청이 될 때까지 유지됩니다.
 
-## 실행 방법
+## 권장 릴리스
 
-### python 3.7 이상
+https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.1
+
+## 실행 방법
+릴리스에 업로드한 실행 파일을 실행하거나, 소스 코드를 내려받아 파이썬으로 실행합니다.
+
+### 실행 파일을 사용할 때
+  - `qtmain.exe` - 윈도우용 실행파일 
+  - `qtmain` - 맥OS용 실행파일
+
+### python 3.7 이상을 사용할 때
 GUI 애플리케이션
 ```bash
 pip install -r requirements.txt
 python qtmain.py
 ```
 
-CLI 애플리케이션
+CLI 애플리케이션 - 유지보수를 점차 축소할 예정입니다.
 ```bash
 pip install -r requirements.txt
 python main.py
@@ -75,10 +84,6 @@ python main.py
    ![image](https://user-images.githubusercontent.com/15683098/128220071-76dd55cc-0adb-4159-9985-9b120013bb4a.png)
    
    ![GIF 2021-08-05 오후 7-34-37](https://user-images.githubusercontent.com/15683098/128337800-a8dd6b91-05ab-4587-9197-3610524acf99.gif)
-
-## 권장 릴리스
-
-https://github.com/binchoo/selenium-kakao-vaccine-reservation/releases/tag/1.1
 
 ## 코드 의존성
 
