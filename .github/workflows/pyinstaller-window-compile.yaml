@@ -28,7 +28,7 @@ jobs:
         pip install -r requirements.txt
     - name: build exe file
       run: |
-        pyinstaller --onefile --hidden-import bootstrap --hidden-import seleniumwire --hidden-import PyQt5.QtWidgets --hidden-import PyQt5.QtCore qtmain.py
+        pyinstaller --onefile dist\window-build.spec
     - name: commit and push
       shell: cmd
       run: |
