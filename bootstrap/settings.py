@@ -52,7 +52,7 @@ initial_context = {
     'default_vaccines': ['ANY'],
     'login_waits': 600,
     'browser': 'chrome',
-    'run_interval': 7,
+    'run_interval': 1,
     'running': False,
 }
 
