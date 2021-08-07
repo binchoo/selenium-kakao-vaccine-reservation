@@ -2,6 +2,7 @@
 
 test.py
 context.json
+dist/
 
 ### OSX ###
 .DS_Store
