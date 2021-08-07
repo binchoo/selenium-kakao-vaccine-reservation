@@ -7,6 +7,7 @@ import seleniumwire.webdriver as webdriver2
 from webdriver_manager import chrome, firefox, microsoft, opera
 
 from service import Hooker, Capture
+from dto import Region
 
 ### Selenium LOGGER settings
 LOGGER.setLevel(logging.WARNING)
@@ -49,6 +50,16 @@ initial_context = {
     },
     'region': None,
     'default_vaccines': ['ANY'],
+    'login_waits': 600,
+    'browser': 'chrome',
     'run_interval': 7,
     'running': False,
+}
+
+serialize_converter = {
+    'region': lambda it: it.__dict__
+}
+
+deserialize_converter = {
+    'region': lambda it: Region(it['top_left'], it['bottom_right'])
 }

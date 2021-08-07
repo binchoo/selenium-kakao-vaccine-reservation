@@ -9,12 +9,6 @@ class Region:
         bottom_right = (region_json['bottomRight']['x'], region_json['bottomRight']['y'])
         return Region(top_left, bottom_right)
 
-    @classmethod
-    def from_json(cls, region_json):
-        top_left = (region_json['top_left'][0], region_json['top_left'][1])
-        bottom_right = (region_json['bottom_right'][0], region_json['bottom_right'][1])
-        return Region(top_left, bottom_right)
-
     def __init__(self, top_left, bottom_right):
         self.top_left = top_left
         self.bottom_right = bottom_right

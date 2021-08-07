@@ -73,6 +73,18 @@ class JsonConfigModel(Model):
     def dump(self, json_file_path: str):
         with open(json_file_path, 'w') as json_file:
             return json.dump(self.jsonify(), json_file)
-            
 
-    
+    @classmethod
+    def convert(cls, model, converter, attrs=None):
+        tmp_model = cls()
+        for attr in model.__names__:
+            if attrs is not None:
+                if attr not in attrs:
+                    continue
+            if attr in converter.keys():
+                value = converter[attr](getattr(model, attr))
+                tmp_model.register(attr, value)
+            else:
+                value = getattr(model, attr)
+                tmp_model.register(attr, value)
+        return tmp_model

@@ -26,10 +26,6 @@ APP_VERSION = 1.1
 APP_NAME = f'COVID-19 Vaccine Auto Reservation v{APP_VERSION}'
 QAPP_STYLE = 'Fusion'
 
-BROWSER = 'chrome'
-
-LOGIN_WAITS = 600 # 10 minutes
-
 USER_VALIDITY_TEXT = {
     "E_RESPONSE": """
         사용자 정보를 불러오는데 실패하였습니다. 

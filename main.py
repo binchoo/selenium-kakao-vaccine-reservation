@@ -1,10 +1,11 @@
-import settings
-import pprint
+from bootstrap import settings
+from bootstrap.model import JsonConfigModel
+from constant import CONTEXT_PATH, USER_VALIDITY_TEXT
 from service.login import KakaoLoginHooker, kakaoUserValidity
 from service.region import RegionCapture
 from service.reservation import LegacyVaccineReservation
 
-def login():
+def login(ctx):
 
     def phase_description(hooker):
         print('='*100)
@@ -16,17 +17,7 @@ def login():
         print(json.dumps(hooker.login_info))
         print('='*100)
 
-    user_validation_text = {
-        "E_RESPONSE": """
-            사용자 정보를 불러오는데 실패하였습니다. 
-            Chrome 브라우저에서 카카오에 제대로 로그인되어있는지 확인해주세요.
-            로그인이 되어 있는데도 안된다면, 카카오톡에 들어가서 잔여백신 알림 신청을 한번 해보세요. 정보제공 동의가 나온다면 동의 후 다시 시도해주세요.""",
-        "E_INVALID_STATUS": "사용자의 상태를 조회할 수 없었습니다.",
-        "E_ALREDY_RESERVED": "이미 접종이 완료되었거나 예약이 완료된 사용자입니다.",
-        "OK": "사용자 정보를 불러오는데 성공했습니다."
-    }
-
-    login_hooker = KakaoLoginHooker('chrome')
+    login_hooker = KakaoLoginHooker(ctx.browser, ctx.login_waits)
     login_hooker.on_start(phase_description)
     login_hooker.on_end(phase_summary)
 
@@ -34,10 +25,10 @@ def login():
     login_cookie_list = login_hooker.login_info
     login_cookie_dict = {item['name']:item['value'] for item in login_cookie_list}
     
-    print(user_validation_text[kakaoUserValidity(login_cookie_dict)])
+    print(USER_VALIDITY_TEXT[kakaoUserValidity(login_cookie_dict)])
     return login_cookie_dict
 
-def region_selection():
+def region_selection(ctx):
 
     def phase_description(capture):
         print('='*100)
@@ -59,7 +50,7 @@ def region_selection():
             print('앱이 지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
             exit()
 
-    region_capture = RegionCapture('chrome')
+    region_capture = RegionCapture(ctx.browser)
     region_capture.on_start(phase_description)
     region_capture.on_progress(show_current_region)
     region_capture.on_end(phase_summary)
@@ -79,11 +70,13 @@ def reservation(login_cookie, region):
         print(f"[[3단계]] 어플리케이션을 종료합니다.")
         print('='*100)
 
-    vaccine_reservation = LegacyVaccineReservation(login_cookie, region)
+    vaccine_reservation = LegacyVaccineReservation()
     vaccine_reservation.on_start(phase_description)
     vaccine_reservation.on_end(phase_summary)
 
-    vaccine_reservation.start()
+    vaccine_reservation.start(login_cookie=login_cookie, region=region, 
+                                run_interval=ctx.run_interval, vaccine_type='ANY')
 
 if __name__ == '__main__':
-    reservation(login(), region_selection())
+    ctx = JsonConfigModel(json=settings.initial_context)
+    reservation(login(ctx), region_selection(ctx))

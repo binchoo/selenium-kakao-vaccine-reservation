@@ -11,43 +11,39 @@ from PyQt5.QtWidgets import QApplication
 import PyQt5.QtCore as Qt
 from threading import Thread
 
-view_model = JsonConfigModel(json=settings.initial_context)
+model = JsonConfigModel(json=settings.initial_context)
 
 def main():
 
-    from constant import CONTEXT_PATH
-    from constant import APP_NAME, QAPP_STYLE
-    from constant import BROWSER, LOGIN_WAITS, USER_VALIDITY_TO_VIEW_VALIDITY
+    from constant import CONTEXT_PATH, USER_VALIDITY_TO_VIEW_VALIDITY, APP_NAME, QAPP_STYLE
 
     app = view = None
     login_hooker = region_capture = reservation = None
 
-    def get_saved_attributes():
+    def use_saved_model():
         try:
             saved_model = JsonConfigModel.from_file(CONTEXT_PATH)
-            print(saved_model.dumps())
+            saved_model = JsonConfigModel.convert(saved_model, settings.deserialize_converter)
         except:
             return
-        view_model.update('login_cookie', saved_model.login_cookie)
-        view_model.update('region', Region.from_json(saved_model.region))
-        view_model.update('run_interval', saved_model.run_interval)
+        model.update('login_cookie', saved_model.login_cookie)
+        model.update('region', saved_model.region)
+        model.update('run_interval', saved_model.run_interval)
         userValidity = USER_VALIDITY_TO_VIEW_VALIDITY[kakaoUserValidity(saved_model.login_cookie)]
-        view_model.update('user_validity', userValidity)
+        model.update('user_validity', userValidity)
 
-
-    def save_attributes():
-        context_to_save = JsonConfigModel()
-        context_to_save.register('login_cookie', view_model.login_cookie)
-        context_to_save.register('region', view_model.region.__dict__)
-        context_to_save.register('run_interval', view_model.run_interval)
-        print(context_to_save.dumps())
-        context_to_save.dump(CONTEXT_PATH)
+    def save_model():
+        to_save = JsonConfigModel.convert(model, 
+                                            settings.serialize_converter, 
+                                            attrs=['login_cookie', 'region', 'run_interval'])
+        to_save.dump(CONTEXT_PATH)
+        print(to_save.dumps())
 
     def create_app_and_view():
         app = QApplication([])
         app.setApplicationName(APP_NAME)
         app.setStyle(QAPP_STYLE)
-        return app, MainView(model=view_model)
+        return app, MainView(model=model)
 
     def create_login_hooker():
 
@@ -55,13 +51,13 @@ def main():
             if hooker.login_info is not None:
                 login_cookie = { item['name']:item['value'] for item in hooker.login_info}
                 user_validity = kakaoUserValidity(login_cookie)
-                view_model.update('login_cookie', login_cookie)
-                view_model.update('user_validity', USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
+                model.update('login_cookie', login_cookie)
+                model.update('user_validity', USER_VALIDITY_TO_VIEW_VALIDITY[user_validity])
 
         def error_handler(hooker, error):
             view.popMessageBox('브라우저 닫힘', f'브라우저가 임의로 닫혔습니다.')
 
-        hooker = KakaoLoginHooker(browser=BROWSER, waits=LOGIN_WAITS)
+        hooker = KakaoLoginHooker(browser=model.browser, waits=model.login_waits)
         hooker.on_end(validate_login_info)
         hooker.on_error(error_handler)
         return hooker
@@ -73,10 +69,10 @@ def main():
             print("region_capture> 현재 보고 있는 영역")
             print('\t', current_region)
             print('\t', '브라우저를 닫으면 이 영역을 백신 검색에 사용합니다.', end='\n\n')
-            view.notifyRegion(view_model, 'region', current_region)
+            view.notifyRegion(model, 'region', current_region)
             
         def commit_region(capture):
-            view_model.update('region', capture.last_capture)
+            model.update('region', capture.last_capture)
 
         def error_handler(capture, error):
             try:
@@ -85,7 +81,7 @@ def main():
                 print('지정 영역을 탐지하기 전까지 브라우저를 닫지 마세요.')
                 capture.start()
         
-        capture = RegionCapture(BROWSER)
+        capture = RegionCapture(model.browser)
         capture.on_progress(show_current_region)
         capture.on_end(commit_region)
         capture.on_error(error_handler)
@@ -94,10 +90,10 @@ def main():
     def create_reservation():
 
         def set_running_true(resv):
-            view_model.update('running', True)
+            model.update('running', True)
 
         def set_running_false(resv):
-            view_model.update('running', False)
+            model.update('running', False)
 
         reservation = LegacyVaccineReservation()
         reservation.set_view_logger(view.macroLogs)
@@ -116,16 +112,15 @@ def main():
             capture_thread.start()
 
         def run_reservation_macro():
-            view_model.update('run_interval', view.getRunInterval(default=7))
-            reservation_start = lambda: reservation.start(login_cookie=view_model.login_cookie, 
-                                                        region=view_model.region, vaccine_type='ANY', run_interval=view_model.run_interval)
+            model.update('run_interval', view.getRunInterval(default=7))
+            reservation_start = lambda: reservation.start(login_cookie=model.login_cookie, 
+                                                        region=model.region, vaccine_type='ANY', run_interval=model.run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
-            save_attributes()
+            save_model()
 
         def stop_reservation_macro():
             reservation.interrupt()
-            view_model.register('running', False)
 
         view.onLoginBrowserClicked(run_login_hooker)
         view.onRegionBrowserClicked(run_region_capture)
@@ -138,7 +133,7 @@ def main():
     reservation = create_reservation()
     register_view_handler()
 
-    get_saved_attributes()
+    use_saved_model()
     app.exec()
 
 if __name__ == '__main__':
