@@ -1,5 +1,5 @@
 from bootstrap import settings
-from bootstrap.model import JsonConfigModel
+from bootstrap.model import JsonModel
 from constant import CONTEXT_PATH, USER_VALIDITY_TEXT
 from service.login import KakaoLoginHooker, kakaoUserValidity
 from service.region import RegionCapture
@@ -78,5 +78,5 @@ def reservation(login_cookie, region):
                                 run_interval=ctx.run_interval, vaccine_type='ANY')
 
 if __name__ == '__main__':
-    ctx = JsonConfigModel(json=settings.initial_context)
+    ctx = JsonModel(json=settings.initial_context)
     reservation(login(ctx), region_selection(ctx))
