@@ -32,7 +32,7 @@ jobs:
     - name: commit and push
       shell: cmd
       run: |
-        For /f "tokens=1" %a in ('date /t') do (set mydate=%a)
+        For /f "tokens=1" %a in ('date /t') do set mydate=%a
         set message="Build windows binary: %mydate%"
         git config --global user.name 'binchoo'
         git config --global user.email 'jbinchoo@gmail.com'
