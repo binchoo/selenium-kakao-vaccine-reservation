@@ -2,8 +2,6 @@
 
 test.py
 context.json
-dist/
-*.exe
 
 ### OSX ###
 .DS_Store
