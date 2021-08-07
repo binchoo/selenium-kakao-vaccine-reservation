@@ -34,5 +34,6 @@ jobs:
         git config --global user.name 'binchoo'
         git config --global user.email 'jbinchoo@gmail.com'
         git add dist
-        git commit -m "Build windows binary."
+        git commit -m "Build macOS binary."
+        git pull
         git push
