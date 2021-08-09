@@ -16,12 +16,12 @@ class LegacyVaccineReservation(LifeCycleMixin):
         self.header = constant.header.get('kakao')
         self.view_logger = None
 
-    setup_properties = ['login_cookie', 'region', 'run_interval', 'vaccine_type']
+    setup_properties = ['login_cookie', 'region', 'run_interval', 'vaccine_types']
 
     def setup(self):
         self.validate_dependencies()
         self.region_data = self.region.convert_to_dto()
-        self.vaccine_type = VaccineVendor.ANY #TODO: 백신 타입 외부 주입하기
+        self.try_vaccine_types = [enum.value for enum in self.vaccine_types]
         self.kill = False
 
     def validate_dependencies(self):
@@ -36,10 +36,10 @@ class LegacyVaccineReservation(LifeCycleMixin):
             self._print(datetime.now())
             organizations = self.get_available_organizations() #
             if len(organizations) > 0:
-                self._print_orgarnizations(organizations)
-                try_vaccine_types = [self.vaccine_type] if VaccineVendor.ANY != self.vaccine_type else VaccineVendor.values()
-                if self.try_reservation(organizations, try_vaccine_types):
+                if self.try_reservation(organizations):
                     break
+                else:
+                    time.sleep(self.run_interval)
             else:
                 time.sleep(self.run_interval)
 
@@ -60,24 +60,26 @@ class LegacyVaccineReservation(LifeCycleMixin):
         org_code = organization['orgCode']
         url = self.org_inventory_url.format(org_code)
         response = self._fail_safe_api(url, method='get', expects=[200], cookies=self.login_cookie, headers=self.header, verify=False)
+        
+        inventory = []
         if response is not None:
             response_json = json.loads(response.text)
-            print(response_json)
-            inventory = response_json['selectableVaccineCodes']
-        else:
-            inventory = []
+            for left in response_json['lefts']:
+                if left['leftCount'] > 0:
+                    inventory.append(left['vaccineCode'])
         return inventory
 
-    def try_reservation(self, organizations, try_vaccine_types):
+    def try_reservation(self, organizations):
+        self._print(f"{len(organizations)}개 기관에 대해 예약 시도중..")
         for org in organizations:
             if self.kill:
                 break
-            org_code = org['orgCode']
             org_inventory = self.get_organization_inventory(org)
-            for vaccine_type in set(try_vaccine_types) & set(org_inventory):
+            for vaccine_type in set(self.try_vaccine_types) & set(org_inventory):
                 self._print(f"{vaccine_type} 으로 예약을 시도합니다.")
+                self._print_orgarnization(org)
 
-                data = { 'from': 'Map', 'vaccineCode': vaccine_type, 'orgCode': org_code, 'distance': None }
+                data = { 'from': 'Map', 'vaccineCode': vaccine_type, 'orgCode': org['orgCode'], 'distance': None }
                 response = self._fail_safe_api(self.reservation_url, method='post', expects=[200, 403], cookies=self.login_cookie,
                                                 headers=self.header, json=data, verify=False, timeout=7)
                 if response is not None:
@@ -130,13 +132,12 @@ class LegacyVaccineReservation(LifeCycleMixin):
             self.view_logger.log(str(msg))
         print(msg)
 
-    def _print_orgarnizations(self, organizations):
-        for org in organizations:
-            self._print(f"""
-                    기관명: {org.get('orgName')}
-                    주소: {org.get('address')}
-                    잔여갯수: {org.get('leftCounts')}
-                    상태: {org.get('status')}\n""")
+    def _print_orgarnization(self, organization):
+        self._print(f"""
+            기관명: {organization.get('orgName')}
+            주소: {organization.get('address')}
+            잔여갯수: {organization.get('leftCounts')}
+            상태: {organization.get('status')}\n""")
 
     def interrupt(self):
         self.kill = True

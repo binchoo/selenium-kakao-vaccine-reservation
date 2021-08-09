@@ -7,7 +7,7 @@ import seleniumwire.webdriver as webdriver2
 from webdriver_manager import chrome, firefox, microsoft, opera
 
 from service import Hooker, Capture
-from dto import Region
+from dto import Region, VaccineVendor
 
 ### Selenium LOGGER settings
 LOGGER.setLevel(logging.WARNING)
@@ -49,11 +49,34 @@ initial_context = {
         }
     },
     'region': None,
-    'default_vaccines': ['ANY'],
     'login_waits': 600,
     'browser': 'chrome',
     'run_interval': 1,
     'running': False,
+    'vaccine_types': (VaccineVendor.PFIZER, VaccineVendor.MODERNA),
+    'vaccine_type_opts': [
+        {
+            'default': True,
+            'text': '화이자/모더나',
+            'ref': (VaccineVendor.PFIZER, VaccineVendor.MODERNA),
+        }, {
+            'default': False,
+            'text': '화이자',
+            'ref': (VaccineVendor.PFIZER),
+        }, {
+            'default': False,
+            'text': '모더나',
+            'ref': (VaccineVendor.MODERNA),
+        }, {
+            'default': False,
+            'text': '아스트라제네카',
+            'ref': (VaccineVendor.ASTRAZENECA),
+        }, {
+            'default': False,
+            'text': '아무거나',
+            'ref': (VaccineVendor.ANY),
+        }
+    ]
 }
 
 serialize_converter = {

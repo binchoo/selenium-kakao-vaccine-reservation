@@ -28,6 +28,7 @@ class MainView(QWidget):
     def setChildren(self):
         self.addChild(self.platformConfig)
         self.addChild(self.userConfig)
+        self.addChild(self.vaccineConfig)
         self.addChild(self.macroConfig)
         self.addChild(self.macroLogs)
 
@@ -103,6 +104,11 @@ class MainView(QWidget):
         except:
             return default
         return interval
+
+    def getTryVaccineTypes(self):
+        for qRadioButton in self.vaccineConfig.vaccineTypeRadioButtons:
+            if qRadioButton.isChecked():
+                return qRadioButton.ref
         
 class PlatformConfig(QWidget):
     
@@ -321,23 +327,55 @@ class RegionConfig(QGroupBox):
     def mock(self):
         self.region = None
 
-class VaccineConfig(QWidget):
+class VaccineConfig(QGroupBox):
 
     def __init__(self, parent=None, model=None):
         super().__init__()
         self.parent = parent
         if model is not None:
-            self.default_vaccines = model.default_vaccines
+            self.vaccineTypeOpts = model.vaccine_type_opts
         else:
             self.mock()
 
+        self.vaccineTypeRadioButtons = [QRadioButton() for i in range(len(self.vaccineTypeOpts))]
         self.setup()
 
     def setup(self):
-        pass
+        self.setTitle('백신 종류 선택')
+        self.useLayout(QVBoxLayout())
+        self.setChildren()
+
+    def setChildren(self):
+        for i, qRadioButton in enumerate(self.vaccineTypeRadioButtons):
+            self.addChild(qRadioButton)
+            qRadioButton.setChecked(self.vaccineTypeOpts[i]['default'])
+            qRadioButton.setText(self.vaccineTypeOpts[i]['text'])
+            qRadioButton.ref = self.vaccineTypeOpts[i]['ref']
 
     def mock(self):
-        self.default_vaccines = ['ANY']
+        self.vaccineTypeOpts = [
+            {
+                'default': True,
+                'text': '화이자/모더나',
+                'ref': (VaccineVendor.PFIZER, VaccineVendor.MODERNA),
+            }, {
+                'default': False,
+                'text': '화이자',
+                'ref': (VaccineVendor.PFIZER, VaccineVendor.MODERNA),
+            }, {
+                'default': False,
+                'text': '모더나',
+                'ref': (VaccineVendor.MODERNA),
+            }, {
+                'default': False,
+                'text': '아스트라제네카',
+                'ref': (VaccineVendor.ASTRAZENECA),
+            }, {
+                'default': False,
+                'text': '아무거나',
+                'ref': (VaccineVendor.ANY),
+            }
+        ]
 
 class MacroConfig(QWidget):
     

@@ -110,9 +110,10 @@ def main():
 
         def run_reservation_macro():
             model.update('run_interval', view.getRunInterval(default=7))
+            model.update('vaccine_type', view.getTryVaccineTypes())
             reservation_start = lambda: reservation.start(
                                             login_cookie=model.login_cookie, 
-                                            region=model.region, vaccine_type='ANY', run_interval=model.run_interval)
+                                            region=model.region, vaccine_types=model.vaccine_types, run_interval=model.run_interval)
             reservation_thread = Thread(target=reservation_start)
             reservation_thread.start()
             save_model()
